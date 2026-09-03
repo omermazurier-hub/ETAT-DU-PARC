@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { getSettings, updateSettings, subscribe } from "@/lib/storage";
 import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
 import { TYPE_PALETTE, TypeBubble } from "@/lib/typeColors";
+import SheetsSettings from "@/components/SheetsSettings";
 import { toast } from "sonner";
 
 const EditableList = ({ label, values, onChange, testIdPrefix, colors, onColorChange }) => {
@@ -150,6 +151,7 @@ export default function SettingsPage() {
             onColorChange={(c) => setS({ ...s, parachuteTypeColors: c })}
             testIdPrefix="parachute-types"
           />
+          <SheetsSettings />
         </div>
 
         <div className="mt-8 flex justify-end">

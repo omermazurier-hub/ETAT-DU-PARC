@@ -64,3 +64,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : bouton Modifier global retiré de la fiche parachute ; bouton Modifier + formulaire inline (SectionEditor) dans chaque fiche Harnais / VP / VS / AAD.
 - 2026-06 : option 'Imprimer un fichier' retirée du menu déroulant.
 - 2026-06 : libellé 'Depuis dernier changement de cône' → 'Cône actuel' (ajout saut incrémente total + cône actuel).
+- 2026-06 : feuilles PDF personnalisées par parachute (IndexedDB, lib/sheets.js, composant SheetsSettings dans Paramètres) ; Imprimer affiche uniquement la feuille si présente, sinon la fiche générée.

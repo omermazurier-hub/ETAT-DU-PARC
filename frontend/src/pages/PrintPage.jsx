@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { getParachute, listParachutes, getSettings } from "@/lib/storage";
+import { getSheet } from "@/lib/sheets";
 import { fmtDate, validityStatus, overallValidity, STATUS_META } from "@/lib/validity";
 import { Printer, ArrowLeft } from "lucide-react";
 
@@ -27,6 +28,23 @@ export default function PrintPage() {
   const [p, setP] = useState(null);
   const [list, setList] = useState([]);
   const [settings, setSettings] = useState(getSettings());
+  const [sheetUrl, setSheetUrl] = useState(null);
+  const [sheetChecked, setSheetChecked] = useState(!id);
+  const frameRef = useRef(null);
+
+  useEffect(() => {
+    if (!id) return;
+    let url;
+    getSheet(id)
+      .then((s) => {
+        if (s?.blob) {
+          url = URL.createObjectURL(s.blob);
+          setSheetUrl(url);
+        }
+      })
+      .finally(() => setSheetChecked(true));
+    return () => url && URL.revokeObjectURL(url);
+  }, [id]);
 
   useEffect(() => {
     setSettings(getSettings());
@@ -44,10 +62,37 @@ export default function PrintPage() {
   }, [id, filter]);
 
   useEffect(() => {
-    // slight delay so components render before print dialog opens
+    if (!sheetChecked || sheetUrl) return;
     const t = setTimeout(() => window.print(), 400);
     return () => clearTimeout(t);
-  }, [p, list]);
+  }, [p, list, sheetChecked, sheetUrl]);
+
+  const printSheet = () => {
+    const w = frameRef.current?.contentWindow;
+    try { w.focus(); w.print(); } catch (_) { window.open(sheetUrl, "_blank"); }
+  };
+
+  if (sheetUrl) {
+    return (
+      <div className="flex h-screen flex-col bg-slate-100" data-testid="custom-sheet-print">
+        <div className="no-print flex items-center justify-between border-b border-slate-200 bg-white p-4">
+          <Button variant="ghost" onClick={() => navigate(-1)}>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Retour
+          </Button>
+          <div className="text-sm font-semibold text-slate-700">{p?.reference} — feuille personnalisée</div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => window.open(sheetUrl, "_blank")} data-testid="open-custom-sheet-btn">
+              Ouvrir dans un onglet
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={printSheet} data-testid="print-custom-sheet-btn">
+              <Printer className="mr-2 h-4 w-4" /> Imprimer
+            </Button>
+          </div>
+        </div>
+        <iframe ref={frameRef} title="Feuille d'impression" src={sheetUrl} className="flex-1 w-full" onLoad={printSheet} data-testid="custom-sheet-frame" />
+      </div>
+    );
+  }
 
   const filterLabel = {
     all: "Tous les parachutes",
