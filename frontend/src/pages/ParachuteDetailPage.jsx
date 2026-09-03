@@ -220,12 +220,12 @@ export default function ParachuteDetailPage() {
         {/* 4 sub-cards */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <SubCard title="Harnais" icon={Package} onClick={() => setSheet("sac")} testId="card-sac">
-            <InfoLine label="Type" value={p.sac?.type} />
+            <InfoLine label="Nom" value={p.sac?.type} />
             <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
             <InfoLine label="Fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
           </SubCard>
           <SubCard title="Voile principale" icon={Wind} onClick={() => setSheet("vp")} testId="card-voile-principale">
-            <InfoLine label="Type" value={p.voilePrincipale?.type} />
+            <InfoLine label="Nom" value={p.voilePrincipale?.type} />
             <InfoLine label="N° série" value={p.voilePrincipale?.serialNumber} mono />
             <InfoLine label="Total sauts" value={(p.voilePrincipale?.totalJumps || 0).toLocaleString("fr-FR")} mono />
             <InfoLine label="Cône" value={(p.voilePrincipale?.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
@@ -237,7 +237,7 @@ export default function ParachuteDetailPage() {
             testId="card-voile-secours"
             badge={<StatusBadge status={invalid ? "invalide" : vsStatus} testId="badge-vs" />}
           >
-            <InfoLine label="Type" value={p.voileSecours?.type} />
+            <InfoLine label="Nom" value={p.voileSecours?.type} />
             <InfoLine label="N° série" value={p.voileSecours?.serialNumber} mono />
             <InfoLine label="Dernier pliage" value={fmtDate(p.voileSecours?.lastPackDate)} mono />
             <InfoLine label="Validité" value={fmtDate(p.voileSecours?.validityDate)} mono />
@@ -249,7 +249,7 @@ export default function ParachuteDetailPage() {
             testId="card-appareil-securite"
             badge={<StatusBadge status={invalid ? "invalide" : aadStatus} testId="badge-aad" />}
           >
-            <InfoLine label="Type" value={p.appareilSecurite?.type} />
+            <InfoLine label="Nom" value={p.appareilSecurite?.type} />
             <InfoLine label="Marque / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim()} />
             <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />
             <InfoLine label="Validité / péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
@@ -312,7 +312,7 @@ function SacSheet({ open, onClose, p }) {
           <SheetDescription>Fiche technique du harnais (sac)</SheetDescription>
         </SheetHeader>
         <div className="mt-6 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
-          <InfoLine label="Type" value={p.sac?.type} />
+          <InfoLine label="Nom" value={p.sac?.type} />
           <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
           <InfoLine label="Date de fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
         </div>
@@ -384,7 +384,7 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
         </SheetHeader>
 
         <div className="mt-6 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
-          <InfoLine label="Type" value={vp.type} />
+          <InfoLine label="Nom" value={vp.type} />
           <InfoLine label="N° série" value={vp.serialNumber} mono />
           <InfoLine label="Date de fabrication" value={fmtDate(vp.manufacturingDate)} mono />
         </div>
@@ -588,7 +588,7 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
             <div className="text-sm font-medium text-slate-500">Statut de validité</div>
             <StatusBadge status={status} testId="vs-sheet-status" />
           </div>
-          <InfoLine label="Type" value={vs.type} />
+          <InfoLine label="Nom" value={vs.type} />
           <InfoLine label="N° série" value={vs.serialNumber} mono />
           <InfoLine label="Date de fabrication" value={fmtDate(vs.manufacturingDate)} mono />
           <InfoLine label="Dernier pliage" value={fmtDate(vs.lastPackDate)} mono />
@@ -712,7 +712,7 @@ function AadSheet({ open, onClose, p, settings }) {
             <StatusBadge status={status} testId="aad-sheet-status" />
           </div>
           <InfoLine label="Nom / modèle" value={`${a.brand || ""} ${a.model || ""}`.trim() || a.type} testId="aad-sheet-model" />
-          <InfoLine label="Type" value={a.type} />
+          <InfoLine label="Nom" value={a.type} />
           <InfoLine label="N° série" value={a.serialNumber} mono testId="aad-sheet-sn" />
           <InfoLine label="Date de fabrication" value={fmtDate(a.manufacturingDate)} mono />
           <InfoLine label="Validité / péremption" value={fmtDate(a.expiryDate)} mono />

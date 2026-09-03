@@ -57,3 +57,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - Page principale : Harnais (nom, N° série), Voile principale (nom, N° série, nombre de sauts), Voile de secours (nom, N° série, badge), Appareil de sécurité (nom/modèle, N° série, validité/péremption, badge).
 - Fiche Appareil de sécurité : ajout du champ `appareilSecurite.totalJumps`, affiché et modifiable (setAadJumps dans storage.js), + champ dans le formulaire ajout/modif et fiche imprimable.
 - Reste à faire : vérifier import fichier à imprimer (AppHeader), supprimer ArchivesPage orpheline, sauvegarde/restauration, guide .exe.
+- 2026-06 : menus déroulants Type remplacés par zones de texte libres (parachute, harnais, appareil), libellés 'Nom'.

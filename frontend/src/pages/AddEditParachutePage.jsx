@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DatePickerFR from "@/components/DatePickerFR";
-import { createParachute, updateParachute, getParachute, getSettings } from "@/lib/storage";
+import { createParachute, updateParachute, getParachute } from "@/lib/storage";
 import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
 
@@ -65,7 +64,6 @@ export default function AddEditParachutePage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
-  const settings = getSettings();
   const [form, setForm] = useState(emptyForm());
 
   useEffect(() => {
@@ -124,18 +122,13 @@ export default function AddEditParachutePage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <SectionCard title="Parachute" accent="bg-blue-600">
             <Field label="Type">
-              <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v }))}>
-                <SelectTrigger className="h-11" data-testid="form-parachute-type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {settings.parachuteTypes.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                data-testid="form-parachute-type"
+                value={form.type}
+                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
+                className="h-11"
+                placeholder="Ex : BOI, TANDEM…"
+              />
             </Field>
             <Field label="Référence / Désignation" className="md:col-span-2">
               <Input
@@ -149,22 +142,14 @@ export default function AddEditParachutePage() {
           </SectionCard>
 
           <SectionCard title="Harnais" accent="bg-blue-500">
-            <Field label="Type">
-              <Select
+            <Field label="Nom du harnais">
+              <Input
+                data-testid="form-sac-type"
                 value={form.sac.type}
-                onValueChange={upd("sac", "type")}
-              >
-                <SelectTrigger className="h-11" data-testid="form-sac-type">
-                  <SelectValue placeholder="—" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(settings.sacTypes || []).map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(e) => upd("sac", "type")(e.target.value)}
+                className="h-11"
+                placeholder="Ex : Mirage G4, Vector 3…"
+              />
             </Field>
             <Field label="N° de série">
               <Input
@@ -184,7 +169,7 @@ export default function AddEditParachutePage() {
           </SectionCard>
 
           <SectionCard title="Voile principale" accent="bg-blue-500">
-            <Field label="Type de voile">
+            <Field label="Nom de la voile">
               <Input
                 data-testid="form-vp-type"
                 value={form.voilePrincipale.type}
@@ -238,7 +223,7 @@ export default function AddEditParachutePage() {
           </SectionCard>
 
           <SectionCard title="Voile de secours" accent="bg-blue-500">
-            <Field label="Type">
+            <Field label="Nom de la voile de secours">
               <Input
                 data-testid="form-vs-type"
                 value={form.voileSecours.type}
@@ -279,22 +264,14 @@ export default function AddEditParachutePage() {
           </SectionCard>
 
           <SectionCard title="Appareil de sécurité" accent="bg-blue-500">
-            <Field label="Type">
-              <Select
+            <Field label="Nom / modèle de l'appareil">
+              <Input
+                data-testid="form-aad-type"
                 value={form.appareilSecurite.type}
-                onValueChange={upd("appareilSecurite", "type")}
-              >
-                <SelectTrigger className="h-11" data-testid="form-aad-type">
-                  <SelectValue placeholder="—" />
-                </SelectTrigger>
-                <SelectContent>
-                  {settings.aadTypes.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(e) => upd("appareilSecurite", "type")(e.target.value)}
+                className="h-11"
+                placeholder="Ex : Cypres 2, Vigil Cuattro…"
+              />
             </Field>
             <Field label="Marque">
               <Input
