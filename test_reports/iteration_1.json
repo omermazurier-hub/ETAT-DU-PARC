@@ -1,0 +1,25 @@
+{
+  "summary": "Frontend-only smoke test of ParaTech (parachute technical management app). Home loads with 3 seed rows (Mirage G4, Sigma, Vector), search filters instantly, type/status filters work, detail page shows 4 clickable cards. Voile principale sheet shows total (1 250) and depuis-cone (250); +1 saut correctly increments BOTH to 1 251/251 (toast 'Saut ajouté (+1 total, +1 cône)' visible). Cone change dialog opens with date picker + observation, on save the depuis-cone counter resets to 0 while total stays at 1 251. New reserve pack computes validity date +12 months (year 2027 verified in body). Maintenance sheet opens. Header +Ajouter navigates to /nouveau with correct form (Type BOI, Référence, N° série). Print button present. No forbidden words (bénéficiaire/utilisateur/perception) found anywhere.",
+  "tested_scope": ["frontend", "integration"],
+  "passed": [
+    "Home loads with 3 seed parachutes in horizontal rectangles with 4 sections",
+    "Instant search 'VP-72031' filters to exactly 1 row",
+    "Filter by type BOI reduces list to 2 rows",
+    "Clicking a row opens detail with card-sac/card-voile-principale/card-voile-secours/card-appareil-securite",
+    "Voile principale sheet shows total 1 250 and depuis-cone 250 (visually confirmed in screenshot)",
+    "btn-add-jump increments both counters to 1 251 / 251 (toast confirms +1 total, +1 cône)",
+    "btn-cone-change opens dialog with date picker + observation; after save depuis-cone resets to 0 while total unchanged (1 251)",
+    "btn-new-pack computes validity = pack date + 12 months (year 2027 visible)",
+    "maintenance-btn opens the maintenance sheet",
+    "add-parachute-button navigates to /nouveau form with Type/Référence/N° série",
+    "print-btn is present in header",
+    "menu-button is present",
+    "No forbidden person-related words (bénéficiaire, utilisateur, perception) present"
+  ],
+  "failed": [],
+  "action_items": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100%"},
+  "retest_needed": false,
+  "full_testing_deferred": true,
+  "notes": "Deeper flows not exercised in this smoke pass: JSON export/import, Settings persistence & applying new 6-month validity, Réparation status change, Archive/désarchive round-trip, Maintenance & Réparation tabs page, Print A4 layout content, edit-jumps manual dialog. Recommended to be covered in full testing pass."
+}

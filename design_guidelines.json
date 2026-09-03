@@ -1,0 +1,125 @@
+{
+  "project_name": "ParaTech - Gestion Technique de Matériel Parachutiste",
+  "app_type": "desktop-style web app (utility/professional tool, offline-first)",
+  "language": "French (fr-FR)",
+  "theme": {
+    "mode": "light",
+    "background": "White (#FFFFFF) and crisp subtle slate grey background tones (#F8FAFC, #F1F5F9)",
+    "primary_color": "Aviation Cobalt Blue (#1D4ED8 / #2563EB)",
+    "secondary_color": "Navy Slate (#0F172A / #1E293B)",
+    "accent_color": "Sky Blue Highlight (#E0F2FE / #0284C7)",
+    "status_colors": {
+      "valide": {
+        "hex": "#16A34A",
+        "bg": "#DCFCE7",
+        "border": "#86EFAC",
+        "label": "VALIDE",
+        "badge_class": "bg-emerald-100 text-emerald-800 border-emerald-300 font-semibold"
+      },
+      "peremption_proche": {
+        "hex": "#D97706",
+        "bg": "#FEF3C7",
+        "border": "#FDE68A",
+        "label": "PÉREMPTION PROCHE",
+        "badge_class": "bg-amber-100 text-amber-800 border-amber-300 font-semibold"
+      },
+      "perime": {
+        "hex": "#DC2626",
+        "bg": "#FEE2E2",
+        "border": "#FCA5A5",
+        "label": "PÉRIMÉ",
+        "badge_class": "bg-rose-100 text-rose-800 border-rose-300 font-semibold"
+      }
+    }
+  },
+  "typography": {
+    "heading_font": "Chivo, Outfit, or System Sans-Serif (Clean, technical, high-legibility)",
+    "body_font": "Inter, System-UI, sans-serif",
+    "mono_font": "JetBrains Mono, Source Code Pro, monospace (for serial numbers, dates, jump counts)",
+    "hierarchy": {
+      "app_title": "text-2xl font-bold tracking-tight text-slate-900",
+      "page_header": "text-3xl font-extrabold tracking-tight text-slate-900",
+      "section_title": "text-xl font-bold text-slate-800",
+      "card_title": "text-lg font-bold text-slate-900",
+      "body": "text-base text-slate-700 leading-normal",
+      "subtext": "text-sm text-slate-500",
+      "badge": "text-xs font-bold tracking-wide uppercase"
+    }
+  },
+  "ui_principles": {
+    "buttons": "Large, tactile, high-contrast action buttons (h-11 to h-12, px-6, text-base, rounded-lg) designed for quick desktop operation.",
+    "layout_mode": "No generic stats/counter cards on home page hero. The home page directly presents the list of parachutes as prominent LONG HORIZONTAL RECTANGLES.",
+    "horizontal_rectangle_item": "Each parachute row is a wide horizontal container (`p-5 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-blue-500 hover:shadow-md transition-all`). It contains a left header section (Rig Identifier/Serial + Type + Total Jumps) and 4 distinct, equally balanced horizontal columns/cards representing SAC, VOILE PRINCIPALE, VOILE DE SECOURS, APPAREIL DE SÉCURITÉ with their individual validity badges.",
+    "detail_view": "Clicking a parachute opens a comprehensive detail view/modal featuring 4 interactive main sub-cards (SAC, VOILE PRINCIPALE, VOILE DE SECOURS, APPAREIL DE SÉCURITÉ), jump counters (total + jumps since last lines/cône change), cone change history timeline, reserve packing history with auto-calculated expiration dates (e.g. 6 months/180 days standard rule), maintenance & repair logs, and action bar (Edit, Archive, Print A4, Export JSON).",
+    "navigation": "Header bar with app title 'ParaTech', search bar, filter triggers (Status, Rig Type, Archived), + NOUVEAU PARACHUTE primary CTA, Import/Export JSON backup tools, Print view trigger, Settings modal trigger."
+  },
+  "key_features_to_implement": [
+    "1. Home Page Horizontal Rectangle List with instant search, multi-filter dropdown (Valide / Péremption proche / Périmé / Archivé) and sorting.",
+    "2. New/Edit Parachute Form Modal (fields for Rig ID/Identifier, Owner/Ref, Sac model/serial/DOM, Main Canopy model/serial/size/DOM/lines count, Reserve Canopy model/serial/DOM/last repack date/validity duration, AAD/Safety Device model/serial/DOM/next battery service date).",
+    "3. Interactive Detail View with 4 Sub-Cards (Sac, Voile Principale, Voile Secours, Appareil de Sécurité).",
+    "4. Jump Counter Manager (+1 Jump, +5 Jumps, custom add, + resetting/tracking jumps since last lines/cône replacement).",
+    "5. Lines/Cône Change History (Log date, technician, line set type, jump counter at change).",
+    "6. Reserve Repack History (Log date, rigger name, certificate #, automatically calculates 6-month validity deadline and status badge).",
+    "7. Maintenance & Repair Log (Date, description, type, cost/time, technician).",
+    "8. Automatic Validity Status Calculation (Vert = >30 days remaining, Orange = <=30 days remaining or 90% cone life, Rouge = expired date or max jumps exceeded).",
+    "9. Offline Storage Engine (IndexedDB + localStorage fallback with sample initial parachute data so app is immediately populated).",
+    "10. Backup & Restore (JSON Export of full database & JSON Import validation).",
+    "11. A4 Print Formatted View (@media print stylesheet for clean printable equipment cards and fleet lists).",
+    "12. Settings Modal (Configure validity period days, max jumps per lines set threshold, warning thresholds)."
+  ],
+  "testing_requirements": {
+    "must_include_data_testid": true,
+    "key_test_ids": [
+      "app-header",
+      "search-input",
+      "filter-status-select",
+      "add-parachute-button",
+      "export-json-button",
+      "import-json-button",
+      "settings-button",
+      "print-fleet-button",
+      "parachute-list",
+      "parachute-row-{id}",
+      "parachute-detail-modal",
+      "card-sac",
+      "card-voile-principale",
+      "card-voile-secours",
+      "card-appareil-securite",
+      "btn-add-jump",
+      "btn-cone-change",
+      "btn-repack-reserve",
+      "btn-add-maintenance",
+      "btn-print-parachute",
+      "btn-edit-parachute",
+      "btn-archive-parachute",
+      "badge-status-sac",
+      "badge-status-voile-p",
+      "badge-status-voile-s",
+      "badge-status-aad"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Build a robust, clean desktop web application in React JS using Tailwind CSS and Lucide React icons.",
+    "Ensure all components use .js or .jsx file extensions.",
+    "Do NOT add generic analytics counters at the top of the home page. Jump straight into the list of parachutes rendered as long horizontal rectangles.",
+    "Store all data in IndexedDB/localStorage with pre-populated realistic parachute equipment items (e.g. Mirage G4, Vector 3, Javelin Odyssey, Icarus Safire 3, PD Reserve, Cypress 2, Vigil Cuattro) so it works 100% offline out-of-the-box.",
+    "Ensure every interactive element has a clear data-testid attribute in kebab-case.",
+    "Ensure buttons are large (h-11, px-5, text-base) and visually clean.",
+    "Implement A4 print styles using @media print so clicking Print generates a pristine printable technical sheet without navigation headers.",
+    "Toast notifications using Sonner for user actions (jump added, repack saved, JSON imported, backup exported)."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) where appropriate (e.g. sticky header, modal overlays).",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons. Use Lucide React icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "All interactive and key informational elements MUST include a data-testid attribute to facilitate robust automated testing."
+  ]
+}

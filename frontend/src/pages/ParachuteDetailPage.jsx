@@ -1,0 +1,726 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import AppHeader from "@/components/AppHeader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import DatePickerFR from "@/components/DatePickerFR";
+import { StatusBadge, ParachuteStatusPill } from "@/components/StatusBadge";
+import {
+  getParachute,
+  subscribe,
+  addJump,
+  setJumps,
+  addConeChange,
+  addReservePack,
+  updateSection,
+  addMaintenance,
+  addReparation,
+  setStatus,
+  archiveParachute,
+  getSettings,
+} from "@/lib/storage";
+import { fmtDate, fmtDateTime, validityStatus, overallValidity } from "@/lib/validity";
+import {
+  ArrowLeft,
+  Package,
+  Wind,
+  Shield,
+  Cpu,
+  Plus,
+  Pencil,
+  RefreshCcw,
+  Wrench,
+  Archive,
+  Printer,
+  History,
+  ChevronRight,
+} from "lucide-react";
+import { toast } from "sonner";
+
+const InfoLine = ({ label, value, mono, testId }) => (
+  <div className="flex items-start justify-between gap-4 border-b border-slate-100 py-2.5 last:border-0">
+    <div className="text-sm font-medium text-slate-500">{label}</div>
+    <div
+      data-testid={testId}
+      className={`text-right text-sm font-semibold text-slate-900 ${mono ? "font-mono-tech" : ""}`}
+    >
+      {value || "—"}
+    </div>
+  </div>
+);
+
+const SubCard = ({ title, icon: Icon, onClick, children, testId, badge }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    data-testid={testId}
+    className="group flex w-full flex-col rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm hover:border-blue-500 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+    style={{ transitionProperty: "border-color, box-shadow", transitionDuration: "180ms" }}
+  >
+    <div className="mb-3 flex items-center justify-between">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="font-heading text-base font-extrabold uppercase tracking-wide text-slate-900">
+          {title}
+        </div>
+      </div>
+      <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-blue-600" />
+    </div>
+    <div className="flex-1 space-y-1">{children}</div>
+    {badge && <div className="mt-3">{badge}</div>}
+  </button>
+);
+
+export default function ParachuteDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [p, setP] = useState(null);
+  const [settings, setSettings] = useState(getSettings());
+  const [sheet, setSheet] = useState(null); // "sac"|"vp"|"vs"|"aad"|"maintenance"|"reparation"|"history"
+
+  useEffect(() => {
+    const reload = () => {
+      setP(getParachute(id));
+      setSettings(getSettings());
+    };
+    reload();
+    return subscribe(reload);
+  }, [id]);
+
+  if (!p) {
+    return (
+      <div>
+        <AppHeader />
+        <main className="mx-auto max-w-3xl px-6 py-16 text-center">
+          <p className="text-slate-600">Parachute introuvable.</p>
+          <Button onClick={() => navigate("/")} className="mt-4 bg-blue-600 hover:bg-blue-700">
+            Retour à l'accueil
+          </Button>
+        </main>
+      </div>
+    );
+  }
+
+  const overall = overallValidity(p, settings.warningDays);
+  const vsStatus = validityStatus(p.voileSecours?.validityDate, settings.warningDays);
+  const aadStatus = validityStatus(p.appareilSecurite?.expiryDate, settings.warningDays);
+
+  const doArchive = () => {
+    if (!window.confirm(p.archived ? "Désarchiver ce parachute ?" : "Archiver ce parachute ?")) return;
+    archiveParachute(id, !p.archived);
+    toast.success(p.archived ? "Parachute désarchivé" : "Parachute archivé");
+    if (!p.archived) navigate("/");
+  };
+
+  return (
+    <div>
+      <AppHeader onPrint={() => navigate(`/parachute/${id}/imprimer`)} />
+      <main className="mx-auto max-w-[1300px] px-6 py-8">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/")}
+          className="mb-4 text-slate-600"
+          data-testid="back-button"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" /> Retour
+        </Button>
+
+        {/* Header */}
+        <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div>
+            <div className="mb-2 flex items-center gap-3">
+              <span className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-white">
+                {p.type}
+              </span>
+              <ParachuteStatusPill status={p.status} testId="detail-status" />
+              <StatusBadge status={overall} testId="detail-overall" />
+            </div>
+            <h1
+              data-testid="detail-title"
+              className="font-heading text-4xl font-extrabold tracking-tight text-slate-900"
+            >
+              {p.reference}
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">Créé le {fmtDate(p.createdAt)}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              className="h-11"
+              onClick={() => navigate(`/parachute/${id}/modifier`)}
+              data-testid="edit-parachute-btn"
+            >
+              <Pencil className="mr-2 h-4 w-4" /> Modifier
+            </Button>
+            <Button variant="outline" className="h-11" onClick={() => setSheet("maintenance")} data-testid="maintenance-btn">
+              <Wrench className="mr-2 h-4 w-4" /> Maintenance
+            </Button>
+            <Button variant="outline" className="h-11" onClick={() => setSheet("reparation")} data-testid="reparation-btn">
+              <Wrench className="mr-2 h-4 w-4" /> Réparation
+            </Button>
+            <Button variant="outline" className="h-11" onClick={() => setSheet("history")} data-testid="history-btn">
+              <History className="mr-2 h-4 w-4" /> Historique
+            </Button>
+            <Button
+              variant="outline"
+              className="h-11"
+              onClick={() => navigate(`/parachute/${id}/imprimer`)}
+              data-testid="print-btn"
+            >
+              <Printer className="mr-2 h-4 w-4" /> Imprimer
+            </Button>
+            <Button variant="outline" className="h-11 border-rose-300 text-rose-700 hover:bg-rose-50" onClick={doArchive} data-testid="archive-btn">
+              <Archive className="mr-2 h-4 w-4" /> {p.archived ? "Désarchiver" : "Archiver"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Status change buttons */}
+        <div className="mb-6 flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <span className="self-center px-2 text-xs font-bold uppercase tracking-wider text-slate-600">
+            Statut :
+          </span>
+          {["EN SERVICE", "EN MAINTENANCE", "EN RÉPARATION", "INDISPONIBLE", "EXPIRÉ"].map((s) => (
+            <Button
+              key={s}
+              size="sm"
+              variant={p.status === s ? "default" : "outline"}
+              className={p.status === s ? "bg-blue-600 hover:bg-blue-700" : ""}
+              onClick={() => {
+                setStatus(id, s);
+                toast.success(`Statut : ${s}`);
+              }}
+              data-testid={`set-status-${s.replace(/\s+/g, "-")}`}
+            >
+              {s}
+            </Button>
+          ))}
+        </div>
+
+        {/* 4 sub-cards */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <SubCard title="Sac" icon={Package} onClick={() => setSheet("sac")} testId="card-sac">
+            <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
+            <InfoLine label="Fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
+          </SubCard>
+          <SubCard title="Voile principale" icon={Wind} onClick={() => setSheet("vp")} testId="card-voile-principale">
+            <InfoLine label="N° série" value={p.voilePrincipale?.serialNumber} mono />
+            <InfoLine label="Total sauts" value={(p.voilePrincipale?.totalJumps || 0).toLocaleString("fr-FR")} mono />
+            <InfoLine label="Depuis cône" value={(p.voilePrincipale?.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
+          </SubCard>
+          <SubCard
+            title="Voile de secours"
+            icon={Shield}
+            onClick={() => setSheet("vs")}
+            testId="card-voile-secours"
+            badge={<StatusBadge status={vsStatus} testId="badge-vs" />}
+          >
+            <InfoLine label="N° série" value={p.voileSecours?.serialNumber} mono />
+            <InfoLine label="Dernier pliage" value={fmtDate(p.voileSecours?.lastPackDate)} mono />
+            <InfoLine label="Validité" value={fmtDate(p.voileSecours?.validityDate)} mono />
+          </SubCard>
+          <SubCard
+            title="Appareil de sécurité"
+            icon={Cpu}
+            onClick={() => setSheet("aad")}
+            testId="card-appareil-securite"
+            badge={<StatusBadge status={aadStatus} testId="badge-aad" />}
+          >
+            <InfoLine label="Marque / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim()} />
+            <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />
+            <InfoLine label="Péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
+          </SubCard>
+        </div>
+
+        {/* Sheets */}
+        <SacSheet open={sheet === "sac"} onClose={() => setSheet(null)} p={p} />
+        <VoilePrincipaleSheet open={sheet === "vp"} onClose={() => setSheet(null)} p={p} />
+        <VoileSecoursSheet open={sheet === "vs"} onClose={() => setSheet(null)} p={p} settings={settings} />
+        <AadSheet open={sheet === "aad"} onClose={() => setSheet(null)} p={p} settings={settings} />
+        <MaintenanceSheet open={sheet === "maintenance"} onClose={() => setSheet(null)} p={p} kind="maintenance" />
+        <MaintenanceSheet open={sheet === "reparation"} onClose={() => setSheet(null)} p={p} kind="reparation" />
+        <HistorySheet open={sheet === "history"} onClose={() => setSheet(null)} p={p} />
+      </main>
+    </div>
+  );
+}
+
+/* -------------------- SAC SHEET -------------------- */
+function SacSheet({ open, onClose, p }) {
+  const [obs, setObs] = useState(p.sac?.observations || "");
+  useEffect(() => setObs(p.sac?.observations || ""), [p]);
+  const save = () => {
+    updateSection(p.id, "sac", { observations: obs }, "Modification observations sac");
+    toast.success("Sac mis à jour");
+    onClose();
+  };
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">Sac</SheetTitle>
+          <SheetDescription>Fiche technique du sac</SheetDescription>
+        </SheetHeader>
+        <div className="mt-6 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
+          <InfoLine label="Date de fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
+        </div>
+        <div className="mt-6 space-y-2">
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+            Observations
+          </Label>
+          <Textarea rows={5} value={obs} onChange={(e) => setObs(e.target.value)} data-testid="sac-observations" />
+        </div>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>Fermer</Button>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={save} data-testid="save-sac-obs">
+            Enregistrer
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/* -------------------- VOILE PRINCIPALE SHEET -------------------- */
+function VoilePrincipaleSheet({ open, onClose, p }) {
+  const vp = p.voilePrincipale || {};
+  const [dlg, setDlg] = useState(null);
+  const [coneDate, setConeDate] = useState("");
+  const [coneObs, setConeObs] = useState("");
+  const [editTotal, setEditTotal] = useState(vp.totalJumps || 0);
+  const [editCone, setEditCone] = useState(vp.jumpsSinceCone || 0);
+
+  useEffect(() => {
+    setEditTotal(vp.totalJumps || 0);
+    setEditCone(vp.jumpsSinceCone || 0);
+  }, [vp.totalJumps, vp.jumpsSinceCone]);
+
+  const doAddJump = () => {
+    addJump(p.id, 1);
+    toast.success("Saut ajouté (+1 total, +1 cône)");
+  };
+  const doEditJumps = () => {
+    setJumps(p.id, editTotal, editCone);
+    toast.success("Nombre de sauts mis à jour");
+    setDlg(null);
+  };
+  const doConeChange = () => {
+    if (!coneDate) {
+      toast.error("Choisissez une date");
+      return;
+    }
+    addConeChange(p.id, { date: coneDate, observation: coneObs });
+    toast.success("Changement de cône enregistré — compteur cône remis à 0");
+    setConeDate("");
+    setConeObs("");
+    setDlg(null);
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">Voile principale</SheetTitle>
+          <SheetDescription>{vp.type}</SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-6 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <InfoLine label="Type" value={vp.type} />
+          <InfoLine label="N° série" value={vp.serialNumber} mono />
+          <InfoLine label="Date de fabrication" value={fmtDate(vp.manufacturingDate)} mono />
+        </div>
+
+        {/* Jumps */}
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-blue-700">
+              Nombre total de sauts
+            </div>
+            <div data-testid="vp-total-jumps" className="font-mono-tech text-4xl font-extrabold text-blue-900">
+              {(vp.totalJumps || 0).toLocaleString("fr-FR")}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-600">
+              Depuis dernier changement de cône
+            </div>
+            <div data-testid="vp-cone-jumps" className="font-mono-tech text-4xl font-extrabold text-slate-900">
+              {(vp.jumpsSinceCone || 0).toLocaleString("fr-FR")}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button className="h-11 bg-blue-600 hover:bg-blue-700" onClick={doAddJump} data-testid="btn-add-jump">
+            <Plus className="mr-2 h-5 w-5" /> Ajouter un saut
+          </Button>
+          <Button variant="outline" className="h-11" onClick={() => setDlg("edit-jumps")} data-testid="btn-edit-jumps">
+            <Pencil className="mr-2 h-4 w-4" /> Modifier le nombre de sauts
+          </Button>
+        </div>
+
+        {/* Cone section */}
+        <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="font-heading text-lg font-extrabold uppercase tracking-wide text-slate-900">
+              Cône de suspension
+            </h3>
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setDlg("cone")} data-testid="btn-cone-change">
+              <RefreshCcw className="mr-2 h-4 w-4" /> Nouveau changement
+            </Button>
+          </div>
+          <InfoLine label="Sauts depuis dernier changement" value={(vp.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
+          <InfoLine label="Date du dernier changement" value={fmtDate(vp.lastConeChangeDate)} mono />
+
+          <div className="mt-4">
+            <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600">
+              Historique des changements
+            </div>
+            <div className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+              {(vp.coneHistory || []).length === 0 && (
+                <div className="p-3 text-sm text-slate-500">Aucun changement enregistré.</div>
+              )}
+              {(vp.coneHistory || []).map((h) => (
+                <div key={h.id} className="flex items-center justify-between gap-3 p-3">
+                  <div>
+                    <div className="font-mono-tech text-sm font-semibold text-slate-900">
+                      {fmtDate(h.date)}
+                    </div>
+                    <div className="text-xs text-slate-500">{h.observation || "—"}</div>
+                  </div>
+                  <div className="font-mono-tech text-sm font-bold text-blue-700">
+                    {h.jumpsAtChange} sauts
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Edit jumps dialog */}
+        <Dialog open={dlg === "edit-jumps"} onOpenChange={(o) => !o && setDlg(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Modifier le nombre de sauts</DialogTitle>
+              <DialogDescription>
+                Utile pour enregistrer une voile déjà utilisée. Aucun nom de personne n'est demandé.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Nombre total de sauts</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={editTotal}
+                  onChange={(e) => setEditTotal(Number(e.target.value))}
+                  data-testid="edit-total-input"
+                />
+              </div>
+              <div>
+                <Label>Depuis dernier changement de cône</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={editCone}
+                  onChange={(e) => setEditCone(Number(e.target.value))}
+                  data-testid="edit-cone-input"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDlg(null)}>Annuler</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={doEditJumps} data-testid="save-edit-jumps">
+                Enregistrer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Cone change dialog */}
+        <Dialog open={dlg === "cone"} onOpenChange={(o) => !o && setDlg(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Nouveau changement de cône</DialogTitle>
+              <DialogDescription>
+                Le compteur &quot;sauts depuis dernier changement de cône&quot; sera remis à 0. Le nombre
+                total de sauts de la voile reste inchangé.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <Label>Date du changement</Label>
+                <DatePickerFR value={coneDate} onChange={setConeDate} testId="cone-date-picker" />
+              </div>
+              <div>
+                <Label>Observation</Label>
+                <Textarea value={coneObs} onChange={(e) => setConeObs(e.target.value)} rows={3} data-testid="cone-obs" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDlg(null)}>Annuler</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={doConeChange} data-testid="save-cone-change">
+                Enregistrer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/* -------------------- VOILE SECOURS SHEET -------------------- */
+function VoileSecoursSheet({ open, onClose, p, settings }) {
+  const vs = p.voileSecours || {};
+  const [dlg, setDlg] = useState(false);
+  const [packDate, setPackDate] = useState("");
+  const [packObs, setPackObs] = useState("");
+  const status = validityStatus(vs.validityDate, settings.warningDays);
+
+  const doPack = () => {
+    if (!packDate) { toast.error("Choisissez une date"); return; }
+    addReservePack(p.id, { packDate, observation: packObs });
+    toast.success("Nouveau pliage enregistré");
+    setPackDate("");
+    setPackObs("");
+    setDlg(false);
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">Voile de secours</SheetTitle>
+          <SheetDescription>Pliage et validité</SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-sm font-medium text-slate-500">Statut de validité</div>
+            <StatusBadge status={status} testId="vs-sheet-status" />
+          </div>
+          <InfoLine label="Type" value={vs.type} />
+          <InfoLine label="N° série" value={vs.serialNumber} mono />
+          <InfoLine label="Date de fabrication" value={fmtDate(vs.manufacturingDate)} mono />
+          <InfoLine label="Dernier pliage" value={fmtDate(vs.lastPackDate)} mono />
+          <InfoLine label="Validité du pliage" value={fmtDate(vs.validityDate)} mono />
+        </div>
+
+        <div className="mt-4">
+          <Button className="h-11 bg-blue-600 hover:bg-blue-700" onClick={() => setDlg(true)} data-testid="btn-new-pack">
+            <Plus className="mr-2 h-5 w-5" /> Nouveau pliage
+          </Button>
+        </div>
+
+        <div className="mt-6">
+          <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600">
+            Historique des pliages
+          </div>
+          <div className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+            {(vs.packHistory || []).length === 0 && (
+              <div className="p-3 text-sm text-slate-500">Aucun pliage enregistré.</div>
+            )}
+            {(vs.packHistory || []).map((h) => (
+              <div key={h.id} className="flex flex-col gap-1 p-3">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono-tech text-sm font-semibold text-slate-900">
+                    Pliage : {fmtDate(h.packDate)}
+                  </div>
+                  <div className="font-mono-tech text-xs font-bold text-blue-700">
+                    Validité : {fmtDate(h.validityDate)}
+                  </div>
+                </div>
+                {h.observation && <div className="text-xs text-slate-500">{h.observation}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Dialog open={dlg} onOpenChange={setDlg}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Nouveau pliage du secours</DialogTitle>
+              <DialogDescription>
+                La date de validité est calculée automatiquement selon les paramètres
+                ({settings.reservePackValidityMonths} mois).
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <Label>Date du pliage</Label>
+                <DatePickerFR value={packDate} onChange={setPackDate} testId="pack-date-picker" />
+              </div>
+              <div>
+                <Label>Observation</Label>
+                <Textarea value={packObs} onChange={(e) => setPackObs(e.target.value)} rows={3} data-testid="pack-obs" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDlg(false)}>Annuler</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700" onClick={doPack} data-testid="save-pack">
+                Enregistrer le pliage
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/* -------------------- AAD SHEET -------------------- */
+function AadSheet({ open, onClose, p, settings }) {
+  const a = p.appareilSecurite || {};
+  const [obs, setObs] = useState(a.observations || "");
+  useEffect(() => setObs(a.observations || ""), [p]);
+  const status = validityStatus(a.expiryDate, settings.warningDays);
+  const save = () => {
+    updateSection(p.id, "appareilSecurite", { observations: obs }, "Modification observations appareil de sécurité");
+    toast.success("Appareil de sécurité mis à jour");
+    onClose();
+  };
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">Appareil de sécurité</SheetTitle>
+          <SheetDescription>{a.brand} {a.model}</SheetDescription>
+        </SheetHeader>
+        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-sm font-medium text-slate-500">Statut</div>
+            <StatusBadge status={status} testId="aad-sheet-status" />
+          </div>
+          <InfoLine label="Type" value={a.type} />
+          <InfoLine label="Marque" value={a.brand} />
+          <InfoLine label="Modèle" value={a.model} />
+          <InfoLine label="N° série" value={a.serialNumber} mono />
+          <InfoLine label="Date de fabrication" value={fmtDate(a.manufacturingDate)} mono />
+          <InfoLine label="Date de péremption" value={fmtDate(a.expiryDate)} mono />
+        </div>
+        <div className="mt-6 space-y-2">
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">Observations</Label>
+          <Textarea rows={4} value={obs} onChange={(e) => setObs(e.target.value)} data-testid="aad-observations" />
+        </div>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>Fermer</Button>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={save} data-testid="save-aad">
+            Enregistrer
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/* -------------------- MAINTENANCE / REPARATION SHEET -------------------- */
+function MaintenanceSheet({ open, onClose, p, kind }) {
+  const isM = kind === "maintenance";
+  const entries = isM ? p.maintenance || [] : p.reparation || [];
+  const [date, setDate] = useState("");
+  const [motif, setMotif] = useState("");
+  const [obs, setObs] = useState("");
+  const [remise, setRemise] = useState("");
+
+  const doAdd = () => {
+    if (!date || !motif.trim()) { toast.error("Date et motif requis"); return; }
+    const entry = { date, motif, observation: obs, dateRemiseEnService: remise };
+    if (isM) addMaintenance(p.id, entry);
+    else addReparation(p.id, entry);
+    toast.success(isM ? "Maintenance enregistrée" : "Réparation enregistrée");
+    setDate(""); setMotif(""); setObs(""); setRemise("");
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">{isM ? "Maintenance" : "Réparation"}</SheetTitle>
+          <SheetDescription>
+            {isM ? "Enregistrer une opération de maintenance" : "Enregistrer une opération de réparation"}
+          </SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-6 grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-4">
+          <div>
+            <Label>Date</Label>
+            <DatePickerFR value={date} onChange={setDate} testId={`${kind}-date`} />
+          </div>
+          <div>
+            <Label>Motif</Label>
+            <Input value={motif} onChange={(e) => setMotif(e.target.value)} data-testid={`${kind}-motif`} />
+          </div>
+          <div>
+            <Label>Observation</Label>
+            <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={3} data-testid={`${kind}-obs`} />
+          </div>
+          <div>
+            <Label>Date de remise en service</Label>
+            <DatePickerFR value={remise} onChange={setRemise} testId={`${kind}-remise`} />
+          </div>
+          <Button className="mt-2 bg-blue-600 hover:bg-blue-700" onClick={doAdd} data-testid={`${kind}-save`}>
+            Enregistrer
+          </Button>
+        </div>
+
+        <div className="mt-6">
+          <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-600">
+            Historique
+          </div>
+          <div className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+            {entries.length === 0 && <div className="p-3 text-sm text-slate-500">Aucune opération.</div>}
+            {entries.map((e) => (
+              <div key={e.id} className="flex flex-col gap-1 p-3">
+                <div className="flex items-center justify-between">
+                  <div className="font-mono-tech text-sm font-semibold text-slate-900">
+                    {fmtDate(e.date)}
+                  </div>
+                  {e.dateRemiseEnService && (
+                    <div className="font-mono-tech text-xs text-emerald-700">
+                      Remise en service : {fmtDate(e.dateRemiseEnService)}
+                    </div>
+                  )}
+                </div>
+                <div className="text-sm font-semibold text-slate-800">{e.motif}</div>
+                {e.observation && <div className="text-xs text-slate-500">{e.observation}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/* -------------------- HISTORY SHEET -------------------- */
+function HistorySheet({ open, onClose, p }) {
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+        <SheetHeader>
+          <SheetTitle className="font-heading text-2xl">Historique technique</SheetTitle>
+          <SheetDescription>Opérations enregistrées sur le matériel</SheetDescription>
+        </SheetHeader>
+        <div className="mt-4 space-y-2">
+          {(p.history || []).length === 0 && <p className="text-sm text-slate-500">Aucune entrée.</p>}
+          {(p.history || []).map((h) => (
+            <div key={h.id} className="rounded-lg border border-slate-200 bg-white p-3">
+              <div className="font-mono-tech text-xs font-semibold text-blue-700">
+                {fmtDateTime(h.date)}
+              </div>
+              <div className="text-sm font-medium text-slate-900">{h.label}</div>
+            </div>
+          ))}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
