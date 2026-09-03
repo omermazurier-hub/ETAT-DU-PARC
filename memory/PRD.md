@@ -59,3 +59,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - Reste à faire : vérifier import fichier à imprimer (AppHeader), supprimer ArchivesPage orpheline, sauvegarde/restauration, guide .exe.
 - 2026-06 : menus déroulants Type remplacés par zones de texte libres (parachute, harnais, appareil), libellés 'Nom'.
 - 2026-06 : palette de 10 couleurs par type de parachute dans Paramètres (settings.parachuteTypeColors, lib/typeColors.js), appliquée aux bulles type (page principale + fiche).
+- 2026-06 : section 'Types de harnais' supprimée des paramètres.

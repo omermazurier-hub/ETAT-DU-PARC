@@ -151,12 +151,6 @@ export default function SettingsPage() {
             testIdPrefix="parachute-types"
           />
           <EditableList
-            label="Types de harnais (sacs)"
-            values={s.sacTypes || []}
-            onChange={(v) => setS({ ...s, sacTypes: v })}
-            testIdPrefix="sac-types"
-          />
-          <EditableList
             label="Types d'appareils de sécurité"
             values={s.aadTypes}
             onChange={(v) => setS({ ...s, aadTypes: v })}

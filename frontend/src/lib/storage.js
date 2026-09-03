@@ -8,7 +8,6 @@ const DEFAULT_SETTINGS = {
   warningDays: 30, // "péremption proche" = < 30 jours
   parachuteTypes: ["BOI", "TANDEM", "AUTRE"],
   parachuteTypeColors: { BOI: "blue", TANDEM: "green", AUTRE: "slate" },
-  sacTypes: ["Standard", "École", "Tandem"],
   aadTypes: ["Cypres 2", "Vigil Cuattro", "MARS m2", "Autre"],
 };
 
