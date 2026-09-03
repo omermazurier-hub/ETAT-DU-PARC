@@ -17,13 +17,13 @@ import {
   addConeChange,
   addReservePack,
   updateSection,
+  updateParachute,
   addMaintenance,
   addReparation,
   setStatus,
-  archiveParachute,
   getSettings,
 } from "@/lib/storage";
-import { fmtDate, fmtDateTime, validityStatus, overallValidity } from "@/lib/validity";
+import { fmtDate, fmtDateTime, validityStatus, isParachuteInvalid, packValidationDate } from "@/lib/validity";
 import {
   ArrowLeft,
   Package,
@@ -34,7 +34,6 @@ import {
   Pencil,
   RefreshCcw,
   Wrench,
-  Archive,
   Printer,
   History,
   ChevronRight,
@@ -82,11 +81,14 @@ export default function ParachuteDetailPage() {
   const navigate = useNavigate();
   const [p, setP] = useState(null);
   const [settings, setSettings] = useState(getSettings());
-  const [sheet, setSheet] = useState(null); // "sac"|"vp"|"vs"|"aad"|"maintenance"|"reparation"|"history"
+  const [sheet, setSheet] = useState(null);
+  const [obs, setObs] = useState("");
 
   useEffect(() => {
     const reload = () => {
-      setP(getParachute(id));
+      const cur = getParachute(id);
+      setP(cur);
+      setObs(cur?.observations || "");
       setSettings(getSettings());
     };
     reload();
@@ -107,15 +109,15 @@ export default function ParachuteDetailPage() {
     );
   }
 
-  const overall = overallValidity(p, settings.warningDays);
+  const invalid = isParachuteInvalid(p);
+  const overall = invalid ? "invalide" : "valide";
   const vsStatus = validityStatus(p.voileSecours?.validityDate, settings.warningDays);
   const aadStatus = validityStatus(p.appareilSecurite?.expiryDate, settings.warningDays);
+  const validation = packValidationDate(p);
 
-  const doArchive = () => {
-    if (!window.confirm(p.archived ? "Désarchiver ce parachute ?" : "Archiver ce parachute ?")) return;
-    archiveParachute(id, !p.archived);
-    toast.success(p.archived ? "Parachute désarchivé" : "Parachute archivé");
-    if (!p.archived) navigate("/");
+  const saveObs = () => {
+    updateParachute(p.id, { observations: obs });
+    toast.success("Observations mises à jour");
   };
 
   return (
@@ -132,14 +134,28 @@ export default function ParachuteDetailPage() {
         </Button>
 
         {/* Header */}
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className={`mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border p-6 shadow-sm ${
+          invalid ? "border-rose-300 bg-rose-50" : "border-slate-200 bg-white"
+        }`}>
           <div>
-            <div className="mb-2 flex items-center gap-3">
+            <div className="mb-2 flex flex-wrap items-center gap-3">
               <span className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-white">
                 {p.type}
               </span>
               <ParachuteStatusPill status={p.status} testId="detail-status" />
               <StatusBadge status={overall} testId="detail-overall" />
+              {validation && (
+                <span
+                  data-testid="detail-validation-date"
+                  className={`rounded-md border px-2.5 py-1 font-mono-tech text-xs font-bold ${
+                    invalid
+                      ? "border-rose-300 bg-rose-100 text-rose-800"
+                      : "border-emerald-300 bg-emerald-50 text-emerald-800"
+                  }`}
+                >
+                  Validé : {fmtDate(validation)}
+                </span>
+              )}
             </div>
             <h1
               data-testid="detail-title"
@@ -159,7 +175,7 @@ export default function ParachuteDetailPage() {
               <Pencil className="mr-2 h-4 w-4" /> Modifier
             </Button>
             <Button variant="outline" className="h-11" onClick={() => setSheet("maintenance")} data-testid="maintenance-btn">
-              <Wrench className="mr-2 h-4 w-4" /> Maintenance
+              <Wrench className="mr-2 h-4 w-4" /> Pliage
             </Button>
             <Button variant="outline" className="h-11" onClick={() => setSheet("reparation")} data-testid="reparation-btn">
               <Wrench className="mr-2 h-4 w-4" /> Réparation
@@ -175,9 +191,6 @@ export default function ParachuteDetailPage() {
             >
               <Printer className="mr-2 h-4 w-4" /> Imprimer
             </Button>
-            <Button variant="outline" className="h-11 border-rose-300 text-rose-700 hover:bg-rose-50" onClick={doArchive} data-testid="archive-btn">
-              <Archive className="mr-2 h-4 w-4" /> {p.archived ? "Désarchiver" : "Archiver"}
-            </Button>
           </div>
         </div>
 
@@ -186,7 +199,7 @@ export default function ParachuteDetailPage() {
           <span className="self-center px-2 text-xs font-bold uppercase tracking-wider text-slate-600">
             Statut :
           </span>
-          {["EN SERVICE", "EN MAINTENANCE", "EN RÉPARATION", "INDISPONIBLE", "EXPIRÉ"].map((s) => (
+          {["EN SERVICE", "EN PLIAGE", "EN RÉPARATION", "INDISPONIBLE"].map((s) => (
             <Button
               key={s}
               size="sm"
@@ -205,22 +218,25 @@ export default function ParachuteDetailPage() {
 
         {/* 4 sub-cards */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <SubCard title="Sac" icon={Package} onClick={() => setSheet("sac")} testId="card-sac">
+          <SubCard title="Harnais" icon={Package} onClick={() => setSheet("sac")} testId="card-sac">
+            <InfoLine label="Type" value={p.sac?.type} />
             <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
             <InfoLine label="Fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
           </SubCard>
           <SubCard title="Voile principale" icon={Wind} onClick={() => setSheet("vp")} testId="card-voile-principale">
+            <InfoLine label="Type" value={p.voilePrincipale?.type} />
             <InfoLine label="N° série" value={p.voilePrincipale?.serialNumber} mono />
             <InfoLine label="Total sauts" value={(p.voilePrincipale?.totalJumps || 0).toLocaleString("fr-FR")} mono />
-            <InfoLine label="Depuis cône" value={(p.voilePrincipale?.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
+            <InfoLine label="Cône" value={(p.voilePrincipale?.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
           </SubCard>
           <SubCard
             title="Voile de secours"
             icon={Shield}
             onClick={() => setSheet("vs")}
             testId="card-voile-secours"
-            badge={<StatusBadge status={vsStatus} testId="badge-vs" />}
+            badge={<StatusBadge status={invalid ? "invalide" : vsStatus} testId="badge-vs" />}
           >
+            <InfoLine label="Type" value={p.voileSecours?.type} />
             <InfoLine label="N° série" value={p.voileSecours?.serialNumber} mono />
             <InfoLine label="Dernier pliage" value={fmtDate(p.voileSecours?.lastPackDate)} mono />
             <InfoLine label="Validité" value={fmtDate(p.voileSecours?.validityDate)} mono />
@@ -230,12 +246,39 @@ export default function ParachuteDetailPage() {
             icon={Cpu}
             onClick={() => setSheet("aad")}
             testId="card-appareil-securite"
-            badge={<StatusBadge status={aadStatus} testId="badge-aad" />}
+            badge={<StatusBadge status={invalid ? "invalide" : aadStatus} testId="badge-aad" />}
           >
+            <InfoLine label="Type" value={p.appareilSecurite?.type} />
             <InfoLine label="Marque / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim()} />
             <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />
             <InfoLine label="Péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
           </SubCard>
+        </div>
+
+        {/* Global observations */}
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="h-6 w-1 rounded bg-blue-600" />
+            <h2 className="font-heading text-base font-extrabold uppercase tracking-wide text-slate-900">
+              Observations
+            </h2>
+          </div>
+          <Textarea
+            rows={4}
+            value={obs}
+            onChange={(e) => setObs(e.target.value)}
+            placeholder="Observations générales sur le matériel…"
+            data-testid="parachute-observations"
+          />
+          <div className="mt-3 flex justify-end">
+            <Button
+              onClick={saveObs}
+              className="h-11 bg-blue-600 hover:bg-blue-700"
+              data-testid="save-parachute-observations"
+            >
+              Enregistrer les observations
+            </Button>
+          </div>
         </div>
 
         {/* Sheets */}
@@ -264,10 +307,11 @@ function SacSheet({ open, onClose, p }) {
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader>
-          <SheetTitle className="font-heading text-2xl">Sac</SheetTitle>
-          <SheetDescription>Fiche technique du sac</SheetDescription>
+          <SheetTitle className="font-heading text-2xl">Harnais</SheetTitle>
+          <SheetDescription>Fiche technique du harnais (sac)</SheetDescription>
         </SheetHeader>
         <div className="mt-6 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <InfoLine label="Type" value={p.sac?.type} />
           <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
           <InfoLine label="Date de fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
         </div>
@@ -296,11 +340,18 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
   const [coneObs, setConeObs] = useState("");
   const [editTotal, setEditTotal] = useState(vp.totalJumps || 0);
   const [editCone, setEditCone] = useState(vp.jumpsSinceCone || 0);
+  const [vpObs, setVpObs] = useState(vp.observations || "");
 
   useEffect(() => {
     setEditTotal(vp.totalJumps || 0);
     setEditCone(vp.jumpsSinceCone || 0);
-  }, [vp.totalJumps, vp.jumpsSinceCone]);
+    setVpObs(vp.observations || "");
+  }, [vp.totalJumps, vp.jumpsSinceCone, vp.observations]);
+
+  const saveVpObs = () => {
+    updateSection(p.id, "voilePrincipale", { observations: vpObs }, "Modification observations voile principale");
+    toast.success("Observations mises à jour");
+  };
 
   const doAddJump = () => {
     addJump(p.id, 1);
@@ -404,6 +455,27 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
           </div>
         </div>
 
+        {/* VP observations */}
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">Observations</Label>
+          <Textarea
+            rows={3}
+            value={vpObs}
+            onChange={(e) => setVpObs(e.target.value)}
+            className="mt-2"
+            data-testid="vp-observations"
+          />
+          <div className="mt-2 flex justify-end">
+            <Button
+              onClick={saveVpObs}
+              className="bg-blue-600 hover:bg-blue-700"
+              data-testid="save-vp-observations"
+            >
+              Enregistrer les observations
+            </Button>
+          </div>
+        </div>
+
         {/* Edit jumps dialog */}
         <Dialog open={dlg === "edit-jumps"} onOpenChange={(o) => !o && setDlg(null)}>
           <DialogContent>
@@ -483,7 +555,15 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
   const [dlg, setDlg] = useState(false);
   const [packDate, setPackDate] = useState("");
   const [packObs, setPackObs] = useState("");
+  const [vsObs, setVsObs] = useState(vs.observations || "");
   const status = validityStatus(vs.validityDate, settings.warningDays);
+
+  useEffect(() => setVsObs(vs.observations || ""), [vs.observations]);
+
+  const saveVsObs = () => {
+    updateSection(p.id, "voileSecours", { observations: vsObs }, "Modification observations voile de secours");
+    toast.success("Observations mises à jour");
+  };
 
   const doPack = () => {
     if (!packDate) { toast.error("Choisissez une date"); return; }
@@ -541,6 +621,27 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
                 {h.observation && <div className="text-xs text-slate-500">{h.observation}</div>}
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* VS observations */}
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">Observations</Label>
+          <Textarea
+            rows={3}
+            value={vsObs}
+            onChange={(e) => setVsObs(e.target.value)}
+            className="mt-2"
+            data-testid="vs-observations"
+          />
+          <div className="mt-2 flex justify-end">
+            <Button
+              onClick={saveVsObs}
+              className="bg-blue-600 hover:bg-blue-700"
+              data-testid="save-vs-observations"
+            >
+              Enregistrer les observations
+            </Button>
           </div>
         </div>
 
@@ -635,7 +736,7 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
     const entry = { date, motif, observation: obs, dateRemiseEnService: remise };
     if (isM) addMaintenance(p.id, entry);
     else addReparation(p.id, entry);
-    toast.success(isM ? "Maintenance enregistrée" : "Réparation enregistrée");
+    toast.success(isM ? "Pliage enregistré" : "Réparation enregistrée");
     setDate(""); setMotif(""); setObs(""); setRemise("");
   };
 
@@ -643,9 +744,9 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
         <SheetHeader>
-          <SheetTitle className="font-heading text-2xl">{isM ? "Maintenance" : "Réparation"}</SheetTitle>
+          <SheetTitle className="font-heading text-2xl">{isM ? "Pliage" : "Réparation"}</SheetTitle>
           <SheetDescription>
-            {isM ? "Enregistrer une opération de maintenance" : "Enregistrer une opération de réparation"}
+            {isM ? "Enregistrer une opération de pliage" : "Enregistrer une opération de réparation"}
           </SheetDescription>
         </SheetHeader>
 

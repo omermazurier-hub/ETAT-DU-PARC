@@ -13,13 +13,11 @@ import {
   Menu,
   Plus,
   Printer,
-  Archive,
   Settings,
   Wrench,
   Download,
   Upload,
   RefreshCw,
-  List,
 } from "lucide-react";
 import { toast } from "sonner";
 import { exportJson, importJson, resetToSeed } from "@/lib/storage";
@@ -36,6 +34,7 @@ const ParachuteGlyph = ({ className }) => (
 export default function AppHeader({ onPrint }) {
   const navigate = useNavigate();
   const fileRef = useRef(null);
+  const printFileRef = useRef(null);
 
   const handleExport = () => {
     const blob = new Blob([exportJson()], { type: "application/json" });
@@ -69,6 +68,26 @@ export default function AppHeader({ onPrint }) {
     }
   };
 
+  const handlePrintFileClick = () => printFileRef.current?.click();
+
+  const handlePrintFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const w = window.open(url, "_blank");
+    if (w) {
+      const trigger = () => {
+        try { w.focus(); w.print(); } catch (_) {}
+      };
+      // Try to print once loaded (works for PDF/image in most browsers)
+      w.addEventListener("load", trigger);
+      setTimeout(trigger, 1200);
+    } else {
+      toast.error("Impossible d'ouvrir la fenêtre d'impression");
+    }
+    e.target.value = "";
+  };
+
   const handleReset = () => {
     if (!window.confirm("Réinitialiser toutes les données avec les exemples ? Cette action est irréversible.")) return;
     resetToSeed();
@@ -87,7 +106,7 @@ export default function AppHeader({ onPrint }) {
             <ParachuteGlyph className="h-6 w-6" />
           </div>
           <div>
-            <div className="font-heading text-xl font-extrabold text-slate-900">ParaTech</div>
+            <div className="font-heading text-xl font-extrabold text-slate-900">ETAT DU PARC</div>
             <div className="-mt-0.5 text-xs font-medium text-slate-500">
               Gestion technique du matériel parachutiste
             </div>
@@ -104,16 +123,6 @@ export default function AppHeader({ onPrint }) {
             <Link to="/nouveau">
               <Plus className="mr-2 h-5 w-5" /> Ajouter
             </Link>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-11 border-slate-300 px-5 text-base font-semibold"
-            onClick={onPrint}
-            data-testid="print-fleet-button"
-          >
-            <Printer className="mr-2 h-5 w-5" /> Imprimer
           </Button>
 
           <DropdownMenu>
@@ -133,10 +142,10 @@ export default function AppHeader({ onPrint }) {
                 <ParachuteGlyph className="mr-2 h-4 w-4" /> Tous les parachutes
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/maintenance")} data-testid="menu-maintenance">
-                <Wrench className="mr-2 h-4 w-4" /> Maintenance & Réparation
+                <Wrench className="mr-2 h-4 w-4" /> Pliage
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/archives")} data-testid="menu-archives">
-                <Archive className="mr-2 h-4 w-4" /> Archives
+              <DropdownMenuItem onClick={handlePrintFileClick} data-testid="menu-print-file">
+                <Printer className="mr-2 h-4 w-4" /> Imprimer un fichier
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel>Données</DropdownMenuLabel>
@@ -163,6 +172,14 @@ export default function AppHeader({ onPrint }) {
             className="hidden"
             onChange={handleFileChange}
             data-testid="import-file-input"
+          />
+          <input
+            ref={printFileRef}
+            type="file"
+            accept="application/pdf,image/*"
+            className="hidden"
+            onChange={handlePrintFileChange}
+            data-testid="print-file-input"
           />
         </div>
       </div>

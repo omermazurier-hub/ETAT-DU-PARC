@@ -15,7 +15,7 @@ const emptyForm = () => ({
   type: "BOI",
   reference: "",
   observations: "",
-  sac: { serialNumber: "", manufacturingDate: "" },
+  sac: { type: "", serialNumber: "", manufacturingDate: "" },
   voilePrincipale: {
     type: "",
     serialNumber: "",
@@ -147,7 +147,24 @@ export default function AddEditParachutePage() {
             </Field>
           </SectionCard>
 
-          <SectionCard title="Sac" accent="bg-blue-500">
+          <SectionCard title="Harnais" accent="bg-blue-500">
+            <Field label="Type">
+              <Select
+                value={form.sac.type}
+                onValueChange={upd("sac", "type")}
+              >
+                <SelectTrigger className="h-11" data-testid="form-sac-type">
+                  <SelectValue placeholder="—" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(settings.sacTypes || []).map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="N° de série">
               <Input
                 data-testid="form-sac-sn"
@@ -167,21 +184,13 @@ export default function AddEditParachutePage() {
 
           <SectionCard title="Voile principale" accent="bg-blue-500">
             <Field label="Type de voile">
-              <Select
+              <Input
+                data-testid="form-vp-type"
                 value={form.voilePrincipale.type}
-                onValueChange={upd("voilePrincipale", "type")}
-              >
-                <SelectTrigger className="h-11" data-testid="form-vp-type">
-                  <SelectValue placeholder="—" />
-                </SelectTrigger>
-                <SelectContent>
-                  {settings.voileTypes.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(e) => upd("voilePrincipale", "type")(e.target.value)}
+                className="h-11"
+                placeholder="Ex : Standard, Haute performance…"
+              />
             </Field>
             <Field label="N° de série">
               <Input
@@ -229,21 +238,13 @@ export default function AddEditParachutePage() {
 
           <SectionCard title="Voile de secours" accent="bg-blue-500">
             <Field label="Type">
-              <Select
+              <Input
+                data-testid="form-vs-type"
                 value={form.voileSecours.type}
-                onValueChange={upd("voileSecours", "type")}
-              >
-                <SelectTrigger className="h-11" data-testid="form-vs-type">
-                  <SelectValue placeholder="—" />
-                </SelectTrigger>
-                <SelectContent>
-                  {settings.secoursTypes.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(e) => upd("voileSecours", "type")(e.target.value)}
+                className="h-11"
+                placeholder="Ex : Rond, Aile, Tandem secours…"
+              />
             </Field>
             <Field label="N° de série">
               <Input

@@ -16,7 +16,7 @@ export default function MaintenancePage() {
     return subscribe(reload);
   }, []);
 
-  const maintenance = useMemo(() => items.filter((p) => p.status === "EN MAINTENANCE"), [items]);
+  const maintenance = useMemo(() => items.filter((p) => p.status === "EN PLIAGE"), [items]);
   const reparation = useMemo(() => items.filter((p) => p.status === "EN RÉPARATION"), [items]);
 
   const List = ({ arr, empty }) => (
@@ -27,7 +27,7 @@ export default function MaintenancePage() {
         </div>
       )}
       {arr.map((p) => {
-        const last = (p.status === "EN MAINTENANCE" ? p.maintenance : p.reparation)?.[0];
+        const last = (p.status === "EN PLIAGE" ? p.maintenance : p.reparation)?.[0];
         return (
           <Link
             key={p.id}
@@ -66,21 +66,21 @@ export default function MaintenancePage() {
         <div className="mb-6 flex items-center gap-3">
           <Wrench className="h-8 w-8 text-blue-600" />
           <h1 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900">
-            Maintenance & Réparation
+            Pliage & Réparation
           </h1>
         </div>
 
         <Tabs defaultValue="maintenance">
           <TabsList className="mb-4">
             <TabsTrigger value="maintenance" data-testid="tab-maintenance">
-              En maintenance ({maintenance.length})
+              En pliage ({maintenance.length})
             </TabsTrigger>
             <TabsTrigger value="reparation" data-testid="tab-reparation">
               En réparation ({reparation.length})
             </TabsTrigger>
           </TabsList>
           <TabsContent value="maintenance">
-            <List arr={maintenance} empty="Aucun matériel en maintenance." />
+            <List arr={maintenance} empty="Aucun matériel en pliage." />
           </TabsContent>
           <TabsContent value="reparation">
             <List arr={reparation} empty="Aucun matériel en réparation." />

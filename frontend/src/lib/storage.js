@@ -7,8 +7,7 @@ const DEFAULT_SETTINGS = {
   reservePackValidityMonths: 12, // durée par défaut : 1 an
   warningDays: 30, // "péremption proche" = < 30 jours
   parachuteTypes: ["BOI", "TANDEM", "AUTRE"],
-  voileTypes: ["Standard", "Haute performance", "Voile école", "Tandem principal"],
-  secoursTypes: ["Rond", "Aile", "Tandem secours"],
+  sacTypes: ["Standard", "École", "Tandem"],
   aadTypes: ["Cypres 2", "Vigil Cuattro", "MARS m2", "Autre"],
 };
 
@@ -39,6 +38,7 @@ function seed(db) {
     observations: o.observations || "",
     createdAt: nowIso(),
     sac: {
+      type: o.sacType || "",
       serialNumber: o.sacSN,
       manufacturingDate: o.sacDF,
       observations: "",
@@ -83,6 +83,7 @@ function seed(db) {
       reference: "BOI-001 Mirage G4",
       sacSN: "SAC-88451",
       sacDF: "2019-05-14",
+      sacType: "Standard",
       vpType: "Standard",
       vpSN: "VP-72031",
       vpDF: "2019-05-14",
@@ -114,6 +115,7 @@ function seed(db) {
       reference: "TDM-002 Sigma",
       sacSN: "SAC-77120",
       sacDF: "2021-03-08",
+      sacType: "Tandem",
       vpType: "Tandem principal",
       vpSN: "VP-90211",
       vpDF: "2021-03-08",
@@ -143,6 +145,7 @@ function seed(db) {
       reference: "BOI-003 Vector 3",
       sacSN: "SAC-66210",
       sacDF: "2017-02-11",
+      sacType: "Standard",
       vpType: "Standard",
       vpSN: "VP-55021",
       vpDF: "2017-02-11",
@@ -248,6 +251,7 @@ export function createParachute(data) {
     observations: data.observations || "",
     createdAt: nowIso(),
     sac: {
+      type: data.sac?.type || "",
       serialNumber: data.sac?.serialNumber || "",
       manufacturingDate: data.sac?.manufacturingDate || "",
       observations: "",
@@ -389,8 +393,8 @@ export function addMaintenance(id, entry) {
   if (!p) return null;
   p.maintenance = p.maintenance || [];
   p.maintenance.unshift({ id: uid(), ...entry, createdAt: nowIso() });
-  p.status = "EN MAINTENANCE";
-  addHistory(p, "maintenance", `Mise en maintenance : ${entry.motif || ""}`);
+  p.status = "EN PLIAGE";
+  addHistory(p, "pliage-op", `Mise en pliage : ${entry.motif || ""}`);
   saveDb(db);
   return p;
 }

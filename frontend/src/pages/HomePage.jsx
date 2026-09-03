@@ -12,10 +12,9 @@ import { Search, Filter } from "lucide-react";
 const STATUS_FILTERS = [
   { value: "all", label: "Tous" },
   { value: "EN SERVICE", label: "En service" },
-  { value: "EN MAINTENANCE", label: "En maintenance" },
+  { value: "EN PLIAGE", label: "En pliage" },
   { value: "EN RÉPARATION", label: "En réparation" },
   { value: "proche", label: "Prochaine péremption" },
-  { value: "perime", label: "Expirés" },
 ];
 
 export default function HomePage() {
@@ -46,7 +45,7 @@ export default function HomePage() {
     return items.filter((p) => {
       if (typeFilter !== "all" && p.type !== typeFilter) return false;
       if (statusFilter !== "all") {
-        if (["EN SERVICE", "EN MAINTENANCE", "EN RÉPARATION"].includes(statusFilter)) {
+        if (["EN SERVICE", "EN PLIAGE", "EN RÉPARATION"].includes(statusFilter)) {
           if (p.status !== statusFilter) return false;
         } else if (statusFilter === "proche" || statusFilter === "perime") {
           const ov = overallValidity(p, settings.warningDays);

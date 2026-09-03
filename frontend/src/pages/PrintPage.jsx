@@ -34,7 +34,7 @@ export default function PrintPage() {
     if (filter) {
       const arr = listParachutes({ includeArchived: filter === "archives" });
       let filtered = arr;
-      if (filter === "EN SERVICE" || filter === "EN MAINTENANCE" || filter === "EN RÉPARATION") {
+      if (filter === "EN SERVICE" || filter === "EN PLIAGE" || filter === "EN RÉPARATION") {
         filtered = arr.filter((x) => x.status === filter);
       } else if (filter === "proche" || filter === "perime") {
         filtered = arr.filter((x) => overallValidity(x, getSettings().warningDays) === filter);
@@ -52,7 +52,7 @@ export default function PrintPage() {
   const filterLabel = {
     all: "Tous les parachutes",
     "EN SERVICE": "En service",
-    "EN MAINTENANCE": "En maintenance",
+    "EN PLIAGE": "En pliage",
     "EN RÉPARATION": "En réparation",
     proche: "Prochaines péremptions",
     perime: "Expirés",
@@ -96,10 +96,11 @@ export default function PrintPage() {
 
             <section>
               <h2 className="mb-2 border-b border-slate-300 pb-1 text-sm font-black uppercase tracking-widest text-blue-700">
-                Sac
+                Harnais
               </h2>
               <table className="w-full border-collapse">
                 <tbody>
+                  <Row label="Type" value={p.sac?.type} />
                   <Row label="N° série" value={p.sac?.serialNumber} mono />
                   <Row label="Date fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
                   <Row label="Observations" value={p.sac?.observations} />
@@ -226,7 +227,7 @@ export default function PrintPage() {
                 <tr>
                   <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Type</th>
                   <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Référence</th>
-                  <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Sac N°</th>
+                  <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Harnais N°</th>
                   <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Voile P. N°</th>
                   <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Total sauts</th>
                   <th className="border border-slate-300 bg-slate-100 px-2 py-1 text-left">Validité secours</th>

@@ -60,6 +60,11 @@ export const STATUS_META = {
     dot: "bg-rose-500",
     badge: "bg-rose-50 text-rose-700 border-rose-300",
   },
+  invalide: {
+    label: "INVALIDE",
+    dot: "bg-rose-500",
+    badge: "bg-rose-50 text-rose-700 border-rose-300",
+  },
   unknown: {
     label: "NON DÉFINI",
     dot: "bg-slate-300",
@@ -69,10 +74,9 @@ export const STATUS_META = {
 
 export const PARACHUTE_STATUS_META = {
   "EN SERVICE": "bg-blue-50 text-blue-700 border-blue-300",
-  "EN MAINTENANCE": "bg-amber-50 text-amber-800 border-amber-300",
+  "EN PLIAGE": "bg-amber-50 text-amber-800 border-amber-300",
   "EN RÉPARATION": "bg-orange-50 text-orange-800 border-orange-300",
   INDISPONIBLE: "bg-slate-100 text-slate-700 border-slate-300",
-  EXPIRÉ: "bg-rose-50 text-rose-700 border-rose-300",
   ARCHIVÉ: "bg-slate-200 text-slate-800 border-slate-400",
 };
 
@@ -81,4 +85,24 @@ export function overallValidity(p, warningDays = 30) {
   const s2 = validityStatus(p.appareilSecurite?.expiryDate, warningDays);
   const priority = { perime: 3, proche: 2, valide: 1, unknown: 0 };
   return priority[s1] >= priority[s2] ? s1 : s2;
+}
+
+// Global validation date for a parachute = lastPackDate + 1 year
+export function packValidationDate(p) {
+  const raw = p?.voileSecours?.lastPackDate;
+  const d = parseDate(raw);
+  if (!d) return null;
+  const v = new Date(d);
+  v.setFullYear(v.getFullYear() + 1);
+  return v;
+}
+
+export function isParachuteInvalid(p) {
+  if (!p) return false;
+  if (p.status !== "EN SERVICE") return true;
+  const v = packValidationDate(p);
+  if (!v) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return v < today;
 }
