@@ -34,7 +34,6 @@ const ParachuteGlyph = ({ className }) => (
 export default function AppHeader({ onPrint }) {
   const navigate = useNavigate();
   const fileRef = useRef(null);
-  const printFileRef = useRef(null);
 
   const handleExport = () => {
     const blob = new Blob([exportJson()], { type: "application/json" });
@@ -66,26 +65,6 @@ export default function AppHeader({ onPrint }) {
     } finally {
       e.target.value = "";
     }
-  };
-
-  const handlePrintFileClick = () => printFileRef.current?.click();
-
-  const handlePrintFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    const w = window.open(url, "_blank");
-    if (w) {
-      const trigger = () => {
-        try { w.focus(); w.print(); } catch (_) {}
-      };
-      // Try to print once loaded (works for PDF/image in most browsers)
-      w.addEventListener("load", trigger);
-      setTimeout(trigger, 1200);
-    } else {
-      toast.error("Impossible d'ouvrir la fenêtre d'impression");
-    }
-    e.target.value = "";
   };
 
   const handleReset = () => {
@@ -144,9 +123,6 @@ export default function AppHeader({ onPrint }) {
               <DropdownMenuItem onClick={() => navigate("/maintenance")} data-testid="menu-maintenance">
                 <Wrench className="mr-2 h-4 w-4" /> Pliage
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handlePrintFileClick} data-testid="menu-print-file">
-                <Printer className="mr-2 h-4 w-4" /> Imprimer un fichier
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel>Données</DropdownMenuLabel>
               <DropdownMenuItem onClick={handleExport} data-testid="menu-export">
@@ -172,14 +148,6 @@ export default function AppHeader({ onPrint }) {
             className="hidden"
             onChange={handleFileChange}
             data-testid="import-file-input"
-          />
-          <input
-            ref={printFileRef}
-            type="file"
-            accept="application/pdf,image/*"
-            className="hidden"
-            onChange={handlePrintFileChange}
-            data-testid="print-file-input"
           />
         </div>
       </div>

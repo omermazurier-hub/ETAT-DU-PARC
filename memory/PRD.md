@@ -62,3 +62,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : section 'Types de harnais' supprimée des paramètres.
 - 2026-06 : suppression Types AAD des paramètres ; AAD = un seul champ Nom/Modèle ; voile de secours : compteurs pliages (packCount, +1 auto à chaque pliage) et ouvertures (openingCount), modifiables dans la fiche.
 - 2026-06 : bouton Modifier global retiré de la fiche parachute ; bouton Modifier + formulaire inline (SectionEditor) dans chaque fiche Harnais / VP / VS / AAD.
+- 2026-06 : option 'Imprimer un fichier' retirée du menu déroulant.
