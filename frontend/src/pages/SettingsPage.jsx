@@ -150,12 +150,6 @@ export default function SettingsPage() {
             onColorChange={(c) => setS({ ...s, parachuteTypeColors: c })}
             testIdPrefix="parachute-types"
           />
-          <EditableList
-            label="Types d'appareils de sécurité"
-            values={s.aadTypes}
-            onChange={(v) => setS({ ...s, aadTypes: v })}
-            testIdPrefix="aad-types"
-          />
         </div>
 
         <div className="mt-8 flex justify-end">

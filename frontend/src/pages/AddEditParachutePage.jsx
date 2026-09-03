@@ -77,7 +77,12 @@ export default function AddEditParachutePage() {
           sac: { ...p.sac },
           voilePrincipale: { ...p.voilePrincipale },
           voileSecours: { ...p.voileSecours },
-          appareilSecurite: { ...p.appareilSecurite },
+          appareilSecurite: {
+            ...p.appareilSecurite,
+            model: `${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type || "",
+            brand: "",
+            type: "",
+          },
         });
       }
     }
@@ -264,29 +269,13 @@ export default function AddEditParachutePage() {
           </SectionCard>
 
           <SectionCard title="Appareil de sécurité" accent="bg-blue-500">
-            <Field label="Nom / modèle de l'appareil">
-              <Input
-                data-testid="form-aad-type"
-                value={form.appareilSecurite.type}
-                onChange={(e) => upd("appareilSecurite", "type")(e.target.value)}
-                className="h-11"
-                placeholder="Ex : Cypres 2, Vigil Cuattro…"
-              />
-            </Field>
-            <Field label="Marque">
-              <Input
-                data-testid="form-aad-brand"
-                value={form.appareilSecurite.brand}
-                onChange={(e) => upd("appareilSecurite", "brand")(e.target.value)}
-                className="h-11"
-              />
-            </Field>
-            <Field label="Modèle">
+            <Field label="Nom / Modèle">
               <Input
                 data-testid="form-aad-model"
                 value={form.appareilSecurite.model}
                 onChange={(e) => upd("appareilSecurite", "model")(e.target.value)}
                 className="h-11"
+                placeholder="Ex : Cypres 2 Expert, Vigil Cuattro…"
               />
             </Field>
             <Field label="N° de série">

@@ -8,7 +8,6 @@ const DEFAULT_SETTINGS = {
   warningDays: 30, // "péremption proche" = < 30 jours
   parachuteTypes: ["BOI", "TANDEM", "AUTRE"],
   parachuteTypeColors: { BOI: "blue", TANDEM: "green", AUTRE: "slate" },
-  aadTypes: ["Cypres 2", "Vigil Cuattro", "MARS m2", "Autre"],
 };
 
 function uid() {
@@ -375,6 +374,27 @@ export function addConeChange(id, { date, observation }) {
   return p;
 }
 
+export function setReserveCounters(id, packCount, openingCount) {
+  const db = loadDb();
+  const p = db.parachutes.find((x) => x.id === id);
+  if (!p) return null;
+  p.voileSecours.packCount = Number(packCount);
+  p.voileSecours.openingCount = Number(openingCount);
+  addHistory(p, "modification", `Modification compteurs secours (pliages=${packCount}, ouvertures=${openingCount})`);
+  saveDb(db);
+  return p;
+}
+
+export function addReserveOpening(id) {
+  const db = loadDb();
+  const p = db.parachutes.find((x) => x.id === id);
+  if (!p) return null;
+  p.voileSecours.openingCount = (p.voileSecours.openingCount || 0) + 1;
+  addHistory(p, "ouverture", "Ouverture du secours (+1)");
+  saveDb(db);
+  return p;
+}
+
 export function addReservePack(id, { packDate, observation }) {
   const db = loadDb();
   const p = db.parachutes.find((x) => x.id === id);
@@ -386,6 +406,7 @@ export function addReservePack(id, { packDate, observation }) {
   const validityDate = v.toISOString().slice(0, 10);
   p.voileSecours.lastPackDate = packDate;
   p.voileSecours.validityDate = validityDate;
+  p.voileSecours.packCount = (p.voileSecours.packCount || 0) + 1;
   p.voileSecours.packHistory = p.voileSecours.packHistory || [];
   p.voileSecours.packHistory.unshift({
     id: uid(),

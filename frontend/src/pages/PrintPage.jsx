@@ -195,9 +195,7 @@ export default function PrintPage() {
               </h2>
               <table className="w-full border-collapse">
                 <tbody>
-                  <Row label="Type" value={p.appareilSecurite?.type} />
-                  <Row label="Marque" value={p.appareilSecurite?.brand} />
-                  <Row label="Modèle" value={p.appareilSecurite?.model} />
+                  <Row label="Nom / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type} />
                   <Row label="N° série" value={p.appareilSecurite?.serialNumber} mono />
                   <Row label="Date fabrication" value={fmtDate(p.appareilSecurite?.manufacturingDate)} mono />
                   <Row label="Date péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />

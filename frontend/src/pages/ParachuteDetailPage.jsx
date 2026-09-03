@@ -16,6 +16,8 @@ import {
   setJumps,
   addConeChange,
   addReservePack,
+  addReserveOpening,
+  setReserveCounters,
   updateSection,
   updateParachute,
   addMaintenance,
@@ -240,6 +242,8 @@ export default function ParachuteDetailPage() {
             <InfoLine label="N° série" value={p.voileSecours?.serialNumber} mono />
             <InfoLine label="Dernier pliage" value={fmtDate(p.voileSecours?.lastPackDate)} mono />
             <InfoLine label="Validité" value={fmtDate(p.voileSecours?.validityDate)} mono />
+            <InfoLine label="Nombre de pliages" value={(p.voileSecours?.packCount || 0).toLocaleString("fr-FR")} mono testId="card-vs-packcount" />
+            <InfoLine label="Nombre d'ouvertures" value={(p.voileSecours?.openingCount || 0).toLocaleString("fr-FR")} mono testId="card-vs-openings" />
           </SubCard>
           <SubCard
             title="Appareil de sécurité"
@@ -248,8 +252,7 @@ export default function ParachuteDetailPage() {
             testId="card-appareil-securite"
             badge={<StatusBadge status={invalid ? "invalide" : aadStatus} testId="badge-aad" />}
           >
-            <InfoLine label="Nom" value={p.appareilSecurite?.type} />
-            <InfoLine label="Marque / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim()} />
+            <InfoLine label="Nom / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type} />
             <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />
             <InfoLine label="Validité / péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
           </SubCard>
@@ -556,9 +559,22 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
   const [packDate, setPackDate] = useState("");
   const [packObs, setPackObs] = useState("");
   const [vsObs, setVsObs] = useState(vs.observations || "");
+  const [editCounters, setEditCounters] = useState(false);
+  const [packCount, setPackCount] = useState(vs.packCount || 0);
+  const [openCount, setOpenCount] = useState(vs.openingCount || 0);
   const status = validityStatus(vs.validityDate, settings.warningDays);
 
   useEffect(() => setVsObs(vs.observations || ""), [vs.observations]);
+  useEffect(() => {
+    setPackCount(vs.packCount || 0);
+    setOpenCount(vs.openingCount || 0);
+  }, [vs.packCount, vs.openingCount]);
+
+  const saveCounters = () => {
+    setReserveCounters(p.id, packCount, openCount);
+    toast.success("Compteurs mis à jour");
+    setEditCounters(false);
+  };
 
   const saveVsObs = () => {
     updateSection(p.id, "voileSecours", { observations: vsObs }, "Modification observations voile de secours");
@@ -594,10 +610,49 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
           <InfoLine label="Validité du pliage" value={fmtDate(vs.validityDate)} mono />
         </div>
 
-        <div className="mt-4">
-          <Button className="h-11 bg-blue-600 hover:bg-blue-700" onClick={() => setDlg(true)} data-testid="btn-new-pack">
-            <Plus className="mr-2 h-5 w-5" /> Nouveau pliage
-          </Button>
+        {/* Counters */}
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-blue-700">Nombre de pliages</div>
+            {editCounters ? (
+              <Input type="number" min={0} value={packCount} onChange={(e) => setPackCount(Number(e.target.value))} className="mt-2 h-11 font-mono-tech text-lg" data-testid="vs-packcount-input" />
+            ) : (
+              <div data-testid="vs-packcount" className="font-mono-tech text-4xl font-extrabold text-blue-900">
+                {(vs.packCount || 0).toLocaleString("fr-FR")}
+              </div>
+            )}
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Nombre d'ouvertures</div>
+            {editCounters ? (
+              <Input type="number" min={0} value={openCount} onChange={(e) => setOpenCount(Number(e.target.value))} className="mt-2 h-11 font-mono-tech text-lg" data-testid="vs-openings-input" />
+            ) : (
+              <div data-testid="vs-openings" className="font-mono-tech text-4xl font-extrabold text-slate-900">
+                {(vs.openingCount || 0).toLocaleString("fr-FR")}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {editCounters ? (
+            <>
+              <Button className="h-11 bg-blue-600 hover:bg-blue-700" onClick={saveCounters} data-testid="save-vs-counters">Enregistrer</Button>
+              <Button variant="outline" className="h-11" onClick={() => setEditCounters(false)}>Annuler</Button>
+            </>
+          ) : (
+            <>
+              <Button className="h-11 bg-blue-600 hover:bg-blue-700" onClick={() => setDlg(true)} data-testid="btn-new-pack">
+                <Plus className="mr-2 h-5 w-5" /> Nouveau pliage
+              </Button>
+              <Button variant="outline" className="h-11" onClick={() => { addReserveOpening(p.id); toast.success("Ouverture ajoutée (+1)"); }} data-testid="btn-add-opening">
+                <Plus className="mr-2 h-4 w-4" /> Ajouter une ouverture
+              </Button>
+              <Button variant="outline" className="h-11" onClick={() => setEditCounters(true)} data-testid="btn-edit-vs-counters">
+                <Pencil className="mr-2 h-4 w-4" /> Modifier les compteurs
+              </Button>
+            </>
+          )}
         </div>
 
         <div className="mt-6">
@@ -703,15 +758,14 @@ function AadSheet({ open, onClose, p, settings }) {
       <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader>
           <SheetTitle className="font-heading text-2xl">Appareil de sécurité</SheetTitle>
-          <SheetDescription>{a.brand} {a.model}</SheetDescription>
+          <SheetDescription>{`${a.brand || ""} ${a.model || ""}`.trim() || a.type}</SheetDescription>
         </SheetHeader>
         <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div className="mb-3 flex items-center justify-between">
             <div className="text-sm font-medium text-slate-500">Statut</div>
             <StatusBadge status={status} testId="aad-sheet-status" />
           </div>
-          <InfoLine label="Nom / modèle" value={`${a.brand || ""} ${a.model || ""}`.trim() || a.type} testId="aad-sheet-model" />
-          <InfoLine label="Nom" value={a.type} />
+          <InfoLine label="Nom / Modèle" value={`${a.brand || ""} ${a.model || ""}`.trim() || a.type} testId="aad-sheet-model" />
           <InfoLine label="N° série" value={a.serialNumber} mono testId="aad-sheet-sn" />
           <InfoLine label="Date de fabrication" value={fmtDate(a.manufacturingDate)} mono />
           <InfoLine label="Validité / péremption" value={fmtDate(a.expiryDate)} mono />
