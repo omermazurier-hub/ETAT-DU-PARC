@@ -201,6 +201,7 @@ export default function PrintPage() {
                   <Row label="N° série" value={p.appareilSecurite?.serialNumber} mono />
                   <Row label="Date fabrication" value={fmtDate(p.appareilSecurite?.manufacturingDate)} mono />
                   <Row label="Date péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
+                  <Row label="Nombre de sauts" value={(p.appareilSecurite?.totalJumps || 0).toLocaleString("fr-FR")} mono />
                   <Row
                     label="Statut"
                     value={<StatusText status={validityStatus(p.appareilSecurite?.expiryDate, settings.warningDays)} />}

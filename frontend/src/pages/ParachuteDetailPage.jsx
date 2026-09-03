@@ -20,6 +20,7 @@ import {
   updateParachute,
   addMaintenance,
   addReparation,
+  setAadJumps,
   setStatus,
   getSettings,
 } from "@/lib/storage";
@@ -251,7 +252,7 @@ export default function ParachuteDetailPage() {
             <InfoLine label="Type" value={p.appareilSecurite?.type} />
             <InfoLine label="Marque / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim()} />
             <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />
-            <InfoLine label="Péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
+            <InfoLine label="Validité / péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
           </SubCard>
         </div>
 
@@ -681,12 +682,22 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
 function AadSheet({ open, onClose, p, settings }) {
   const a = p.appareilSecurite || {};
   const [obs, setObs] = useState(a.observations || "");
-  useEffect(() => setObs(a.observations || ""), [p]);
+  const [editing, setEditing] = useState(false);
+  const [jumps, setJumpsVal] = useState(a.totalJumps || 0);
+  useEffect(() => {
+    setObs(a.observations || "");
+    setJumpsVal(a.totalJumps || 0);
+  }, [p]);
   const status = validityStatus(a.expiryDate, settings.warningDays);
   const save = () => {
     updateSection(p.id, "appareilSecurite", { observations: obs }, "Modification observations appareil de sécurité");
     toast.success("Appareil de sécurité mis à jour");
     onClose();
+  };
+  const saveJumps = () => {
+    setAadJumps(p.id, jumps);
+    toast.success("Nombre de sauts de l'appareil mis à jour");
+    setEditing(false);
   };
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -700,12 +711,42 @@ function AadSheet({ open, onClose, p, settings }) {
             <div className="text-sm font-medium text-slate-500">Statut</div>
             <StatusBadge status={status} testId="aad-sheet-status" />
           </div>
+          <InfoLine label="Nom / modèle" value={`${a.brand || ""} ${a.model || ""}`.trim() || a.type} testId="aad-sheet-model" />
           <InfoLine label="Type" value={a.type} />
-          <InfoLine label="Marque" value={a.brand} />
-          <InfoLine label="Modèle" value={a.model} />
-          <InfoLine label="N° série" value={a.serialNumber} mono />
+          <InfoLine label="N° série" value={a.serialNumber} mono testId="aad-sheet-sn" />
           <InfoLine label="Date de fabrication" value={fmtDate(a.manufacturingDate)} mono />
-          <InfoLine label="Date de péremption" value={fmtDate(a.expiryDate)} mono />
+          <InfoLine label="Validité / péremption" value={fmtDate(a.expiryDate)} mono />
+        </div>
+
+        <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-blue-700">Nombre de sauts</div>
+          {editing ? (
+            <div className="mt-2 flex items-center gap-2">
+              <Input
+                type="number"
+                min={0}
+                value={jumps}
+                onChange={(e) => setJumpsVal(Number(e.target.value))}
+                className="h-11 max-w-[180px] font-mono-tech text-lg"
+                data-testid="aad-jumps-input"
+              />
+              <Button className="h-11 bg-blue-600 hover:bg-blue-700" onClick={saveJumps} data-testid="save-aad-jumps">
+                Enregistrer
+              </Button>
+              <Button variant="outline" className="h-11" onClick={() => { setEditing(false); setJumpsVal(a.totalJumps || 0); }}>
+                Annuler
+              </Button>
+            </div>
+          ) : (
+            <div className="mt-1 flex items-center justify-between gap-3">
+              <div data-testid="aad-total-jumps" className="font-mono-tech text-4xl font-extrabold text-blue-900">
+                {(a.totalJumps || 0).toLocaleString("fr-FR")}
+              </div>
+              <Button variant="outline" onClick={() => setEditing(true)} data-testid="btn-edit-aad-jumps">
+                <Pencil className="mr-2 h-4 w-4" /> Modifier
+              </Button>
+            </div>
+          )}
         </div>
         <div className="mt-6 space-y-2">
           <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">Observations</Label>

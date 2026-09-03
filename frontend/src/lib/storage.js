@@ -289,6 +289,7 @@ export function createParachute(data) {
       serialNumber: data.appareilSecurite?.serialNumber || "",
       manufacturingDate: data.appareilSecurite?.manufacturingDate || "",
       expiryDate: data.appareilSecurite?.expiryDate || "",
+      totalJumps: Number(data.appareilSecurite?.totalJumps || 0),
       observations: "",
     },
     maintenance: [],
@@ -341,6 +342,16 @@ export function setJumps(id, total, sinceCone) {
   p.voilePrincipale.totalJumps = Number(total);
   p.voilePrincipale.jumpsSinceCone = Number(sinceCone);
   addHistory(p, "modification", `Modification du nombre de sauts (total=${total}, cône=${sinceCone})`);
+  saveDb(db);
+  return p;
+}
+
+export function setAadJumps(id, jumps) {
+  const db = loadDb();
+  const p = db.parachutes.find((x) => x.id === id);
+  if (!p) return null;
+  p.appareilSecurite.totalJumps = Number(jumps);
+  addHistory(p, "modification", `Modification du nombre de sauts de l'appareil de sécurité (${jumps})`);
   saveDb(db);
   return p;
 }

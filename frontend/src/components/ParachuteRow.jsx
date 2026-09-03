@@ -80,17 +80,15 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
       {/* 4 sections */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Section title="Harnais" testId={`row-sac-${p.id}`} invalid={invalid}>
-          <Field label="Type" value={p.sac?.type} />
+          <Field label="Nom" value={p.sac?.type} />
           <Field label="N° série" value={p.sac?.serialNumber} mono />
-          <Field label="Fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
         </Section>
 
         <Section title="Voile principale" testId={`row-vp-${p.id}`} invalid={invalid}>
-          <Field label="Type" value={p.voilePrincipale?.type} />
+          <Field label="Nom" value={p.voilePrincipale?.type} />
           <Field label="N° série" value={p.voilePrincipale?.serialNumber} mono />
-          <Field label="Fabrication" value={fmtDate(p.voilePrincipale?.manufacturingDate)} mono />
           <Field
-            label="Sauts (total)"
+            label="Nombre de sauts"
             value={
               <span className="font-mono-tech font-bold text-blue-700">
                 {(p.voilePrincipale?.totalJumps || 0).toLocaleString("fr-FR")}
@@ -100,19 +98,20 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
         </Section>
 
         <Section title="Voile de secours" testId={`row-vs-${p.id}`} invalid={invalid}>
-          <Field label="Type" value={p.voileSecours?.type} />
+          <Field label="Nom" value={p.voileSecours?.type} />
           <Field label="N° série" value={p.voileSecours?.serialNumber} mono />
-          <Field label="Fabrication" value={fmtDate(p.voileSecours?.manufacturingDate)} mono />
           <div className="pt-1">
             <StatusBadge status={vsBadgeStatus} testId={`row-vs-badge-${p.id}`} />
           </div>
         </Section>
 
         <Section title="Appareil de sécurité" testId={`row-aad-${p.id}`} invalid={invalid}>
-          <Field label="Type" value={p.appareilSecurite?.type} />
+          <Field
+            label="Nom / modèle"
+            value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type}
+          />
           <Field label="N° série" value={p.appareilSecurite?.serialNumber} mono />
-          <Field label="Fabrication" value={fmtDate(p.appareilSecurite?.manufacturingDate)} mono />
-          <Field label="Péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
+          <Field label="Validité / péremption" value={fmtDate(p.appareilSecurite?.expiryDate)} mono />
           <div className="pt-1">
             <StatusBadge status={aadBadgeStatus} testId={`row-aad-badge-${p.id}`} />
           </div>

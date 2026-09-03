@@ -38,6 +38,7 @@ const emptyForm = () => ({
     serialNumber: "",
     manufacturingDate: "",
     expiryDate: "",
+    totalJumps: 0,
   },
 });
 
@@ -331,6 +332,15 @@ export default function AddEditParachutePage() {
                 testId="form-aad-exp"
                 value={form.appareilSecurite.expiryDate}
                 onChange={upd("appareilSecurite", "expiryDate")}
+              />
+            </Field>
+            <Field label="Nombre de sauts">
+              <Input
+                type="number"
+                min={0}
+                data-testid="form-aad-jumps"
+                value={form.appareilSecurite.totalJumps ?? 0}
+                onChange={(e) => upd("appareilSecurite", "totalJumps")(Number(e.target.value))}
               />
             </Field>
           </SectionCard>

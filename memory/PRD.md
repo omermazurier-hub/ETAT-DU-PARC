@@ -51,3 +51,9 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 ## Next tasks
 - Testing E2E
 - Documentation build/packaging Electron
+
+
+## 2026-06 — Correction affichage sauts
+- Page principale : Harnais (nom, N° série), Voile principale (nom, N° série, nombre de sauts), Voile de secours (nom, N° série, badge), Appareil de sécurité (nom/modèle, N° série, validité/péremption, badge).
+- Fiche Appareil de sécurité : ajout du champ `appareilSecurite.totalJumps`, affiché et modifiable (setAadJumps dans storage.js), + champ dans le formulaire ajout/modif et fiche imprimable.
+- Reste à faire : vérifier import fichier à imprimer (AppHeader), supprimer ArchivesPage orpheline, sauvegarde/restauration, guide .exe.
