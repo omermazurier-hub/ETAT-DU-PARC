@@ -208,7 +208,7 @@ export default function AddEditParachutePage() {
                 className="h-11 font-mono-tech"
               />
             </Field>
-            <Field label="Sauts depuis dernier changement de cône">
+            <Field label="Cône actuel">
               <Input
                 data-testid="form-vp-cone"
                 type="number"

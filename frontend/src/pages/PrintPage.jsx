@@ -118,7 +118,7 @@ export default function PrintPage() {
                   <Row label="N° série" value={p.voilePrincipale?.serialNumber} mono />
                   <Row label="Date fabrication" value={fmtDate(p.voilePrincipale?.manufacturingDate)} mono />
                   <Row label="Nombre total de sauts" value={(p.voilePrincipale?.totalJumps || 0).toLocaleString("fr-FR")} mono />
-                  <Row label="Sauts depuis dernier changement de cône" value={(p.voilePrincipale?.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
+                  <Row label="Cône actuel" value={(p.voilePrincipale?.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
                   <Row label="Dernier changement de cône" value={fmtDate(p.voilePrincipale?.lastConeChangeDate)} mono />
                 </tbody>
               </table>

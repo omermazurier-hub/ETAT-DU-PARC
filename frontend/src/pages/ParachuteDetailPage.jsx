@@ -406,7 +406,7 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
 
   const doAddJump = () => {
     addJump(p.id, 1);
-    toast.success("Saut ajouté (+1 total, +1 cône)");
+    toast.success("Saut ajouté (+1 total, +1 cône actuel)");
   };
   const doEditJumps = () => {
     setJumps(p.id, editTotal, editCone);
@@ -464,7 +464,7 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4">
             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-600">
-              Depuis dernier changement de cône
+              Cône actuel
             </div>
             <div data-testid="vp-cone-jumps" className="font-mono-tech text-4xl font-extrabold text-slate-900">
               {(vp.jumpsSinceCone || 0).toLocaleString("fr-FR")}
@@ -491,7 +491,7 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
               <RefreshCcw className="mr-2 h-4 w-4" /> Nouveau changement
             </Button>
           </div>
-          <InfoLine label="Sauts depuis dernier changement" value={(vp.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
+          <InfoLine label="Cône actuel" value={(vp.jumpsSinceCone || 0).toLocaleString("fr-FR")} mono />
           <InfoLine label="Date du dernier changement" value={fmtDate(vp.lastConeChangeDate)} mono />
 
           <div className="mt-4">
@@ -561,7 +561,7 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
                 />
               </div>
               <div>
-                <Label>Depuis dernier changement de cône</Label>
+                <Label>Cône actuel</Label>
                 <Input
                   type="number"
                   min={0}
@@ -586,7 +586,7 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
             <DialogHeader>
               <DialogTitle>Nouveau changement de cône</DialogTitle>
               <DialogDescription>
-                Le compteur &quot;sauts depuis dernier changement de cône&quot; sera remis à 0. Le nombre
+                Le compteur &quot;cône actuel&quot; sera remis à 0. Le nombre
                 total de sauts de la voile reste inchangé.
               </DialogDescription>
             </DialogHeader>
