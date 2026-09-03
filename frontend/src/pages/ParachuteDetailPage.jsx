@@ -56,6 +56,49 @@ const InfoLine = ({ label, value, mono, testId }) => (
   </div>
 );
 
+const SectionEditor = ({ p, section, title, fields, testId, prepare = (x) => x }) => {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(() => prepare(p[section] || {}));
+  useEffect(() => setDraft(prepare(p[section] || {})), [p, section]); // eslint-disable-line react-hooks/exhaustive-deps
+  const set = (k) => (v) => setDraft((d) => ({ ...d, [k]: v }));
+  const save = () => {
+    updateSection(p.id, section, draft, `Modification ${title}`);
+    toast.success(`${title} mis à jour`);
+    setEditing(false);
+  };
+  if (!editing) {
+    return (
+      <Button variant="outline" size="sm" onClick={() => setEditing(true)} data-testid={`${testId}-edit-btn`}>
+        <Pencil className="mr-2 h-4 w-4" /> Modifier
+      </Button>
+    );
+  }
+  return (
+    <div className="mt-4 space-y-3 rounded-xl border border-blue-200 bg-blue-50/50 p-4" data-testid={`${testId}-edit-form`}>
+      {fields.map((f) => (
+        <div key={f.key}>
+          <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">{f.label}</Label>
+          {f.type === "date" ? (
+            <DatePickerFR value={draft[f.key] || ""} onChange={set(f.key)} testId={`${testId}-edit-${f.key}`} />
+          ) : (
+            <Input
+              type={f.type || "text"}
+              value={draft[f.key] ?? ""}
+              onChange={(e) => set(f.key)(f.type === "number" ? Number(e.target.value) : e.target.value)}
+              className={`mt-1 h-11 ${f.mono ? "font-mono-tech" : ""}`}
+              data-testid={`${testId}-edit-${f.key}`}
+            />
+          )}
+        </div>
+      ))}
+      <div className="flex justify-end gap-2 pt-1">
+        <Button variant="outline" onClick={() => { setDraft(prepare(p[section] || {})); setEditing(false); }}>Annuler</Button>
+        <Button className="bg-blue-600 hover:bg-blue-700" onClick={save} data-testid={`${testId}-edit-save`}>Enregistrer</Button>
+      </div>
+    </div>
+  );
+};
+
 const SubCard = ({ title, icon: Icon, onClick, children, testId, badge }) => (
   <button
     type="button"
@@ -168,14 +211,6 @@ export default function ParachuteDetailPage() {
             <p className="mt-1 text-sm text-slate-500">Créé le {fmtDate(p.createdAt)}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              className="h-11"
-              onClick={() => navigate(`/parachute/${id}/modifier`)}
-              data-testid="edit-parachute-btn"
-            >
-              <Pencil className="mr-2 h-4 w-4" /> Modifier
-            </Button>
             <Button variant="outline" className="h-11" onClick={() => setSheet("maintenance")} data-testid="maintenance-btn">
               <Wrench className="mr-2 h-4 w-4" /> Pliage
             </Button>
@@ -318,6 +353,19 @@ function SacSheet({ open, onClose, p }) {
           <InfoLine label="N° série" value={p.sac?.serialNumber} mono />
           <InfoLine label="Date de fabrication" value={fmtDate(p.sac?.manufacturingDate)} mono />
         </div>
+        <div className="mt-3">
+          <SectionEditor
+            p={p}
+            section="sac"
+            title="Harnais"
+            testId="sac"
+            fields={[
+              { key: "type", label: "Nom du harnais" },
+              { key: "serialNumber", label: "N° de série", mono: true },
+              { key: "manufacturingDate", label: "Date de fabrication", type: "date" },
+            ]}
+          />
+        </div>
         <div className="mt-6 space-y-2">
           <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">
             Observations
@@ -389,6 +437,19 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
           <InfoLine label="Nom" value={vp.type} />
           <InfoLine label="N° série" value={vp.serialNumber} mono />
           <InfoLine label="Date de fabrication" value={fmtDate(vp.manufacturingDate)} mono />
+        </div>
+        <div className="mt-3">
+          <SectionEditor
+            p={p}
+            section="voilePrincipale"
+            title="Voile principale"
+            testId="vp"
+            fields={[
+              { key: "type", label: "Nom de la voile" },
+              { key: "serialNumber", label: "N° de série", mono: true },
+              { key: "manufacturingDate", label: "Date de fabrication", type: "date" },
+            ]}
+          />
         </div>
 
         {/* Jumps */}
@@ -609,6 +670,21 @@ function VoileSecoursSheet({ open, onClose, p, settings }) {
           <InfoLine label="Dernier pliage" value={fmtDate(vs.lastPackDate)} mono />
           <InfoLine label="Validité du pliage" value={fmtDate(vs.validityDate)} mono />
         </div>
+        <div className="mt-3">
+          <SectionEditor
+            p={p}
+            section="voileSecours"
+            title="Voile de secours"
+            testId="vs"
+            fields={[
+              { key: "type", label: "Nom de la voile de secours" },
+              { key: "serialNumber", label: "N° de série", mono: true },
+              { key: "manufacturingDate", label: "Date de fabrication", type: "date" },
+              { key: "lastPackDate", label: "Date dernier pliage", type: "date" },
+              { key: "validityDate", label: "Date de validité du pliage", type: "date" },
+            ]}
+          />
+        </div>
 
         {/* Counters */}
         <div className="mt-4 grid grid-cols-2 gap-3">
@@ -769,6 +845,21 @@ function AadSheet({ open, onClose, p, settings }) {
           <InfoLine label="N° série" value={a.serialNumber} mono testId="aad-sheet-sn" />
           <InfoLine label="Date de fabrication" value={fmtDate(a.manufacturingDate)} mono />
           <InfoLine label="Validité / péremption" value={fmtDate(a.expiryDate)} mono />
+        </div>
+        <div className="mt-3">
+          <SectionEditor
+            p={p}
+            section="appareilSecurite"
+            title="Appareil de sécurité"
+            testId="aad"
+            prepare={(x) => ({ ...x, model: `${x.brand || ""} ${x.model || ""}`.trim() || x.type || "", brand: "", type: "" })}
+            fields={[
+              { key: "model", label: "Nom / Modèle" },
+              { key: "serialNumber", label: "N° de série", mono: true },
+              { key: "manufacturingDate", label: "Date de fabrication", type: "date" },
+              { key: "expiryDate", label: "Validité / péremption", type: "date" },
+            ]}
+          />
         </div>
 
         <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
