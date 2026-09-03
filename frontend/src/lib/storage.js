@@ -7,6 +7,7 @@ const DEFAULT_SETTINGS = {
   reservePackValidityMonths: 12, // durée par défaut : 1 an
   warningDays: 30, // "péremption proche" = < 30 jours
   parachuteTypes: ["BOI", "TANDEM", "AUTRE"],
+  parachuteTypeColors: { BOI: "blue", TANDEM: "green", AUTRE: "slate" },
   sacTypes: ["Standard", "École", "Tandem"],
   aadTypes: ["Cypres 2", "Vigil Cuattro", "MARS m2", "Autre"],
 };

@@ -58,3 +58,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - Fiche Appareil de sécurité : ajout du champ `appareilSecurite.totalJumps`, affiché et modifiable (setAadJumps dans storage.js), + champ dans le formulaire ajout/modif et fiche imprimable.
 - Reste à faire : vérifier import fichier à imprimer (AppHeader), supprimer ArchivesPage orpheline, sauvegarde/restauration, guide .exe.
 - 2026-06 : menus déroulants Type remplacés par zones de texte libres (parachute, harnais, appareil), libellés 'Nom'.
+- 2026-06 : palette de 10 couleurs par type de parachute dans Paramètres (settings.parachuteTypeColors, lib/typeColors.js), appliquée aux bulles type (page principale + fiche).

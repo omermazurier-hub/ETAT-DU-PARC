@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { fmtDate, validityStatus, isParachuteInvalid, packValidationDate } from "@/lib/validity";
 import { StatusBadge, ParachuteStatusPill } from "@/components/StatusBadge";
 import { ChevronRight } from "lucide-react";
+import { TypeBubble } from "@/lib/typeColors";
+import { getSettings } from "@/lib/storage";
 
 const Field = ({ label, value, mono }) => (
   <div>
@@ -31,6 +33,7 @@ const Section = ({ title, children, testId, invalid }) => (
 
 export default function ParachuteRow({ parachute, warningDays = 30 }) {
   const p = parachute;
+  const settings = getSettings();
   const invalid = isParachuteInvalid(p);
   const vsDateStatus = validityStatus(p.voileSecours?.validityDate, warningDays);
   const aadDateStatus = validityStatus(p.appareilSecurite?.expiryDate, warningDays);
@@ -53,9 +56,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
       {/* Header line */}
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-white">
-            {p.type}
-          </span>
+          <TypeBubble type={p.type} settings={settings} testId={`parachute-type-${p.id}`} />
           <div className="font-heading text-lg font-bold text-slate-900">{p.reference}</div>
           {validation && (
             <span

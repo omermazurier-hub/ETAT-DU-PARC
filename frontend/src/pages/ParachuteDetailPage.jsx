@@ -40,6 +40,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { TypeBubble } from "@/lib/typeColors";
 
 const InfoLine = ({ label, value, mono, testId }) => (
   <div className="flex items-start justify-between gap-4 border-b border-slate-100 py-2.5 last:border-0">
@@ -140,9 +141,7 @@ export default function ParachuteDetailPage() {
         }`}>
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-3">
-              <span className="rounded-md bg-blue-600 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-white">
-                {p.type}
-              </span>
+              <TypeBubble type={p.type} settings={settings} testId="detail-type" />
               <ParachuteStatusPill status={p.status} testId="detail-status" />
               <StatusBadge status={overall} testId="detail-overall" />
               {validation && (

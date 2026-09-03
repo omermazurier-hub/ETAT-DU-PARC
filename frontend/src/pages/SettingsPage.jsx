@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getSettings, updateSettings, subscribe } from "@/lib/storage";
 import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import { TYPE_PALETTE, TypeBubble } from "@/lib/typeColors";
 import { toast } from "sonner";
 
-const EditableList = ({ label, values, onChange, testIdPrefix }) => {
+const EditableList = ({ label, values, onChange, testIdPrefix, colors, onColorChange }) => {
   const [draft, setDraft] = useState("");
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -20,17 +21,36 @@ const EditableList = ({ label, values, onChange, testIdPrefix }) => {
       </div>
       <div className="mb-3 space-y-1.5">
         {values.map((v, i) => (
-          <div key={i} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-            <span className="text-sm font-medium text-slate-800">{v}</span>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-rose-600 hover:bg-rose-50"
-              onClick={() => onChange(values.filter((_, k) => k !== i))}
-              data-testid={`${testIdPrefix}-del-${i}`}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          <div key={i} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+            {colors ? (
+              <TypeBubble type={v} settings={{ parachuteTypeColors: colors }} testId={`${testIdPrefix}-bubble-${i}`} />
+            ) : (
+              <span className="text-sm font-medium text-slate-800">{v}</span>
+            )}
+            <div className="flex items-center gap-1.5">
+              {colors && TYPE_PALETTE.map((c) => (
+                <button
+                  key={c.key}
+                  type="button"
+                  title={c.label}
+                  onClick={() => onColorChange({ ...colors, [v]: c.key })}
+                  data-testid={`${testIdPrefix}-color-${i}-${c.key}`}
+                  className={`h-5 w-5 rounded-full border-2 ${
+                    (colors[v] || "blue") === c.key ? "border-slate-900 scale-110" : "border-white"
+                  }`}
+                  style={{ backgroundColor: c.bg, transitionProperty: "transform", transitionDuration: "120ms" }}
+                />
+              ))}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-rose-600 hover:bg-rose-50"
+                onClick={() => onChange(values.filter((_, k) => k !== i))}
+                data-testid={`${testIdPrefix}-del-${i}`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         ))}
       </div>
@@ -126,6 +146,8 @@ export default function SettingsPage() {
             label="Types de parachutes"
             values={s.parachuteTypes}
             onChange={(v) => setS({ ...s, parachuteTypes: v })}
+            colors={s.parachuteTypeColors || {}}
+            onColorChange={(c) => setS({ ...s, parachuteTypeColors: c })}
             testIdPrefix="parachute-types"
           />
           <EditableList
