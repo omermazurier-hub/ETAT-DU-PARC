@@ -1,6 +1,6 @@
 import React from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import HomePage from "@/pages/HomePage";
 import AddEditParachutePage from "@/pages/AddEditParachutePage";
@@ -13,7 +13,7 @@ import PrintPage from "@/pages/PrintPage";
 export default function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <HashRouter>
         <Toaster position="top-right" richColors closeButton />
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -26,7 +26,7 @@ export default function App() {
           <Route path="/parametres" element={<SettingsPage />} />
           <Route path="/imprimer/liste/:filter" element={<PrintPage />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }

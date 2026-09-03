@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "etat-du-parc",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -63,7 +63,10 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "electron:dev": "concurrently -k \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "yarn build && electron-builder --mac",
+    "electron:build:win": "yarn build && electron-builder --win"
   },
   "browserslist": {
     "production": [
@@ -138,5 +141,36 @@
     "**/tinyglobby/picomatch": "4.0.4",
     "http-proxy-middleware": "2.0.10"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "description": "Gestion technique du matériel parachutiste",
+  "homepage": ".",
+  "main": "electron/main.js",
+  "author": "ETAT DU PARC",
+  "build": {
+    "appId": "fr.etatduparc.app",
+    "productName": "ETAT DU PARC",
+    "files": [
+      "build/**/*",
+      "electron/**/*"
+    ],
+    "directories": {
+      "buildResources": "electron"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }
