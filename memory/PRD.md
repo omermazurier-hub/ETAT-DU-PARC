@@ -66,3 +66,5 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : libellé 'Depuis dernier changement de cône' → 'Cône actuel' (ajout saut incrémente total + cône actuel).
 - 2026-06 : feuilles PDF personnalisées par parachute (IndexedDB, lib/sheets.js, composant SheetsSettings dans Paramètres) ; Imprimer affiche uniquement la feuille si présente, sinon la fiche générée.
 - 2026-06 : préparation Electron (electron/main.js, scripts electron:*, HashRouter, homepage '.'), guide /app/GUIDE_MAC.md.
+- 2026-06 : bouton Supprimer (avec confirmation) sur la fiche parachute, supprime l'ensemble + sa feuille PDF.
+- Note: ne jamais utiliser de commentaire eslint-disable référençant un plugin (react-hooks/...) : le linter de la plateforme plante.

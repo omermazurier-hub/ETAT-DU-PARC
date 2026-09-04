@@ -9,7 +9,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import DatePickerFR from "@/components/DatePickerFR";
 import { StatusBadge, ParachuteStatusPill } from "@/components/StatusBadge";
+import { deleteSheet } from "@/lib/sheets";
 import {
+  deleteParachute,
   getParachute,
   subscribe,
   addJump,
@@ -40,6 +42,7 @@ import {
   Printer,
   History,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { TypeBubble } from "@/lib/typeColors";
@@ -59,7 +62,7 @@ const InfoLine = ({ label, value, mono, testId }) => (
 const SectionEditor = ({ p, section, title, fields, testId, prepare = (x) => x }) => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(() => prepare(p[section] || {}));
-  useEffect(() => setDraft(prepare(p[section] || {})), [p, section]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => setDraft(prepare(p[section] || {})), [p, section]);
   const set = (k) => (v) => setDraft((d) => ({ ...d, [k]: v }));
   const save = () => {
     updateSection(p.id, section, draft, `Modification ${title}`);
@@ -129,6 +132,7 @@ export default function ParachuteDetailPage() {
   const [p, setP] = useState(null);
   const [settings, setSettings] = useState(getSettings());
   const [sheet, setSheet] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [obs, setObs] = useState("");
 
   useEffect(() => {
@@ -228,8 +232,42 @@ export default function ParachuteDetailPage() {
             >
               <Printer className="mr-2 h-4 w-4" /> Imprimer
             </Button>
+            <Button
+              variant="outline"
+              className="h-11 border-rose-300 text-rose-700 hover:bg-rose-50"
+              onClick={() => setDeleteOpen(true)}
+              data-testid="delete-parachute-btn"
+            >
+              <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+            </Button>
           </div>
         </div>
+
+        <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+          <DialogContent data-testid="delete-parachute-dialog">
+            <DialogHeader>
+              <DialogTitle>Supprimer l'ensemble {p.reference} ?</DialogTitle>
+              <DialogDescription>
+                Le harnais, la voile principale, la voile de secours, l'appareil de sécurité et tout l'historique seront définitivement supprimés. Cette action est irréversible.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteOpen(false)}>Annuler</Button>
+              <Button
+                className="bg-rose-600 hover:bg-rose-700"
+                onClick={() => {
+                  deleteParachute(p.id);
+                  deleteSheet(p.id).catch(() => {});
+                  toast.success(`Ensemble ${p.reference} supprimé`);
+                  navigate("/");
+                }}
+                data-testid="confirm-delete-parachute"
+              >
+                Supprimer définitivement
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Status change buttons */}
         <div className="mb-6 flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
