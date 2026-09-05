@@ -247,20 +247,6 @@ export default function AddEditParachutePage() {
                 onChange={upd("voileSecours", "manufacturingDate")}
               />
             </Field>
-            <Field label="Date dernier pliage">
-              <DatePickerFR
-                testId="form-vs-pack"
-                value={form.voileSecours.lastPackDate}
-                onChange={upd("voileSecours", "lastPackDate")}
-              />
-            </Field>
-            <Field label="Date de validité du pliage">
-              <DatePickerFR
-                testId="form-vs-validity"
-                value={form.voileSecours.validityDate}
-                onChange={upd("voileSecours", "validityDate")}
-              />
-            </Field>
           </SectionCard>
 
           <SectionCard title="Appareil de sécurité" accent="bg-blue-500">

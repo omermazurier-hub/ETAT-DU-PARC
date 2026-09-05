@@ -71,3 +71,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : cartes accueil compactes (police réduite, champs sur une ligne), bordure + ombre colorées selon la couleur du type de parachute.
 - 2026-06 : tri des parachutes par type puis référence (tri numérique naturel : BOI 1, BOI 2, BOI 10) dans listParachutes.
 - 2026-06 : champ 'Date de remise en service' supprimé (pliage/réparation) ; placeholders 'Ex : …' retirés du formulaire d'ajout.
+- 2026-06 : formulaire ajout : champs 'dernier pliage'/'validité' retirés de la voile de secours ; la fiche Pliage (bouton clé) enregistre le pliage et fixe automatiquement lastPackDate + validityDate (+12 mois paramétrable), incrémente packCount, sans changer le statut.

@@ -432,9 +432,17 @@ export function addMaintenance(id, entry) {
   const p = db.parachutes.find((x) => x.id === id);
   if (!p) return null;
   p.maintenance = p.maintenance || [];
-  p.maintenance.unshift({ id: uid(), ...entry, createdAt: nowIso() });
-  p.status = "EN PLIAGE";
-  addHistory(p, "pliage-op", `Mise en pliage : ${entry.motif || ""}`);
+  const months = db.settings.reservePackValidityMonths || 12;
+  const v = new Date(entry.date);
+  v.setMonth(v.getMonth() + months);
+  const validityDate = v.toISOString().slice(0, 10);
+  p.maintenance.unshift({ id: uid(), ...entry, validityDate, createdAt: nowIso() });
+  p.voileSecours.lastPackDate = entry.date;
+  p.voileSecours.validityDate = validityDate;
+  p.voileSecours.packCount = (p.voileSecours.packCount || 0) + 1;
+  p.voileSecours.packHistory = p.voileSecours.packHistory || [];
+  p.voileSecours.packHistory.unshift({ id: uid(), packDate: entry.date, validityDate, observation: entry.motif || "", createdAt: nowIso() });
+  addHistory(p, "pliage", `Pliage du ${entry.date} — valide jusqu'au ${validityDate}${entry.motif ? ` (${entry.motif})` : ""}`);
   saveDb(db);
   return p;
 }

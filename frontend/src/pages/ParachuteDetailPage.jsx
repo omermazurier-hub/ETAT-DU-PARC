@@ -954,11 +954,11 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
   const [obs, setObs] = useState("");
 
   const doAdd = () => {
-    if (!date || !motif.trim()) { toast.error("Date et motif requis"); return; }
+    if (!date || (!isM && !motif.trim())) { toast.error(isM ? "Date requise" : "Date et motif requis"); return; }
     const entry = { date, motif, observation: obs };
     if (isM) addMaintenance(p.id, entry);
     else addReparation(p.id, entry);
-    toast.success(isM ? "Pliage enregistré" : "Réparation enregistrée");
+    toast.success(isM ? "Pliage enregistré — validité +1 an" : "Réparation enregistrée");
     setDate(""); setMotif(""); setObs("");
   };
 
@@ -968,17 +968,30 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
         <SheetHeader>
           <SheetTitle className="font-heading text-2xl">{isM ? "Pliage" : "Réparation"}</SheetTitle>
           <SheetDescription>
-            {isM ? "Enregistrer une opération de pliage" : "Enregistrer une opération de réparation"}
+            {isM ? "Enregistrer un nouveau pliage : la validité est prolongée automatiquement d'un an" : "Enregistrer une opération de réparation"}
           </SheetDescription>
         </SheetHeader>
 
+        {isM && (
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Dernier pliage</div>
+              <div className="font-mono-tech text-lg font-bold text-slate-900" data-testid="pliage-last">{fmtDate(p.voileSecours?.lastPackDate)}</div>
+            </div>
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-blue-700">Valide jusqu'au</div>
+              <div className="font-mono-tech text-lg font-bold text-blue-900" data-testid="pliage-validity">{fmtDate(p.voileSecours?.validityDate)}</div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-6 grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-white p-4">
           <div>
-            <Label>Date</Label>
+            <Label>{isM ? "Date du pliage" : "Date"}</Label>
             <DatePickerFR value={date} onChange={setDate} testId={`${kind}-date`} />
           </div>
           <div>
-            <Label>Motif</Label>
+            <Label>{isM ? "Motif (facultatif)" : "Motif"}</Label>
             <Input value={motif} onChange={(e) => setMotif(e.target.value)} data-testid={`${kind}-motif`} />
           </div>
           <div>
@@ -998,10 +1011,15 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
             {entries.length === 0 && <div className="p-3 text-sm text-slate-500">Aucune opération.</div>}
             {entries.map((e) => (
               <div key={e.id} className="flex flex-col gap-1 p-3">
-                <div className="font-mono-tech text-sm font-semibold text-slate-900">
-                  {fmtDate(e.date)}
+                <div className="flex items-center justify-between">
+                  <div className="font-mono-tech text-sm font-semibold text-slate-900">
+                    {fmtDate(e.date)}
+                  </div>
+                  {e.validityDate && (
+                    <div className="font-mono-tech text-xs text-blue-700">Valide jusqu'au {fmtDate(e.validityDate)}</div>
+                  )}
                 </div>
-                <div className="text-sm font-semibold text-slate-800">{e.motif}</div>
+                {e.motif && <div className="text-sm font-semibold text-slate-800">{e.motif}</div>}
                 {e.observation && <div className="text-xs text-slate-500">{e.observation}</div>}
               </div>
             ))}
