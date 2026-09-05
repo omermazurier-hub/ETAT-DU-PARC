@@ -132,7 +132,7 @@ export default function HomePage() {
         </div>
 
         {/* Parachute list */}
-        <div data-testid="parachute-list" className="space-y-4">
+        <div data-testid="parachute-list" className="space-y-3">
           {filtered.length === 0 && (
             <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-16 text-center">
               <p className="text-lg font-semibold text-slate-600">Aucun parachute trouvé</p>

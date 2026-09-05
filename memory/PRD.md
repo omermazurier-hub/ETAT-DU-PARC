@@ -68,3 +68,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : préparation Electron (electron/main.js, scripts electron:*, HashRouter, homepage '.'), guide /app/GUIDE_MAC.md.
 - 2026-06 : bouton Supprimer (avec confirmation) sur la fiche parachute, supprime l'ensemble + sa feuille PDF.
 - Note: ne jamais utiliser de commentaire eslint-disable référençant un plugin (react-hooks/...) : le linter de la plateforme plante.
+- 2026-06 : cartes accueil compactes (police réduite, champs sur une ligne), bordure + ombre colorées selon la couleur du type de parachute.

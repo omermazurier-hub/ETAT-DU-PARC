@@ -234,7 +234,7 @@ export default function ParachuteDetailPage() {
             </Button>
             <Button
               variant="outline"
-              className="h-11 border-rose-300 text-rose-700 hover:bg-rose-50"
+              className="h-11 border-rose-400 bg-rose-50 text-rose-700 hover:bg-rose-100"
               onClick={() => setDeleteOpen(true)}
               data-testid="delete-parachute-btn"
             >
