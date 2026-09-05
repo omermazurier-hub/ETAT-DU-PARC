@@ -382,6 +382,16 @@ export function addConeChange(id, { date, observation }) {
   return p;
 }
 
+export function setReserveValidity(id, validityDate) {
+  const db = loadDb();
+  const p = db.parachutes.find((x) => x.id === id);
+  if (!p) return null;
+  p.voileSecours.validityDate = validityDate;
+  addHistory(p, "modification", `Ajustement de la validité du pliage secours au ${validityDate}`);
+  saveDb(db);
+  return p;
+}
+
 export function setReserveCounters(id, packCount, openingCount) {
   const db = loadDb();
   const p = db.parachutes.find((x) => x.id === id);

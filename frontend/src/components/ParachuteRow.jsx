@@ -78,7 +78,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
                 : "border-emerald-300 bg-emerald-50 text-emerald-800"
             }`}
           >
-            Validé : {fmtDate(validation)}
+            Validité : {fmtDate(validation)}
           </span>
         )}
         <div className="ml-auto flex items-center gap-2">

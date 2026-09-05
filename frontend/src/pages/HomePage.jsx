@@ -56,10 +56,17 @@ export default function HomePage() {
       const hay = [
         p.reference,
         p.type,
+        p.sac?.type,
         p.sac?.serialNumber,
+        p.voilePrincipale?.type,
         p.voilePrincipale?.serialNumber,
+        p.voileSecours?.type,
         p.voileSecours?.serialNumber,
+        p.appareilSecurite?.type,
+        p.appareilSecurite?.brand,
+        p.appareilSecurite?.model,
         p.appareilSecurite?.serialNumber,
+        p.observations,
       ]
         .filter(Boolean)
         .join(" ")
@@ -93,7 +100,7 @@ export default function HomePage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <Input
               data-testid="search-input"
-              placeholder="Rechercher : n° série sac, voile principale, secours, appareil, type…"
+              placeholder="Rechercher : référence, nom ou n° série (harnais, voile, secours, appareil)…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-11 pl-10 text-base"

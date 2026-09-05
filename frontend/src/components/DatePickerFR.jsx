@@ -30,6 +30,7 @@ export default function DatePickerFR({ value, onChange, placeholder = "Choisir u
         <Calendar
           mode="single"
           selected={dateValue}
+          defaultMonth={dateValue}
           onSelect={(d) => {
             if (!d) return onChange("");
             const iso = d.toISOString().slice(0, 10);

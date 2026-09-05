@@ -20,6 +20,7 @@ import {
   addReservePack,
   addReserveOpening,
   setReserveCounters,
+  setReserveValidity,
   updateSection,
   updateParachute,
   addMaintenance,
@@ -202,7 +203,7 @@ export default function ParachuteDetailPage() {
                       : "border-emerald-300 bg-emerald-50 text-emerald-800"
                   }`}
                 >
-                  Validé : {fmtDate(validation)}
+                  Validité : {fmtDate(validation)}
                 </span>
               )}
             </div>
@@ -952,6 +953,8 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
   const [date, setDate] = useState("");
   const [motif, setMotif] = useState("");
   const [obs, setObs] = useState("");
+  const [adjust, setAdjust] = useState(false);
+  const [adjustDate, setAdjustDate] = useState("");
 
   const doAdd = () => {
     if (!date || (!isM && !motif.trim())) { toast.error(isM ? "Date requise" : "Date et motif requis"); return; }
@@ -981,7 +984,36 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
             <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-widest text-blue-700">Valide jusqu'au</div>
               <div className="font-mono-tech text-lg font-bold text-blue-900" data-testid="pliage-validity">{fmtDate(p.voileSecours?.validityDate)}</div>
+              <button
+                type="button"
+                className="mt-1 text-xs font-semibold text-blue-700 underline-offset-2 hover:underline"
+                onClick={() => { setAdjustDate(p.voileSecours?.validityDate || ""); setAdjust((v) => !v); }}
+                data-testid="pliage-adjust-toggle"
+              >
+                Ajuster la date de validité
+              </button>
             </div>
+          </div>
+        )}
+
+        {isM && adjust && (
+          <div className="mt-3 flex flex-wrap items-end gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3" data-testid="pliage-adjust-form">
+            <div className="flex-1 min-w-[200px]">
+              <Label>Nouvelle date de validité</Label>
+              <DatePickerFR value={adjustDate} onChange={setAdjustDate} testId="pliage-adjust-date" />
+            </div>
+            <Button
+              className="h-11 bg-amber-600 hover:bg-amber-700"
+              onClick={() => {
+                if (!adjustDate) return toast.error("Date requise");
+                setReserveValidity(p.id, adjustDate);
+                toast.success("Validité ajustée");
+                setAdjust(false);
+              }}
+              data-testid="pliage-adjust-save"
+            >
+              Enregistrer
+            </Button>
           </div>
         )}
 
