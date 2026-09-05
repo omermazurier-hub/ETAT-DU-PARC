@@ -952,15 +952,14 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
   const [date, setDate] = useState("");
   const [motif, setMotif] = useState("");
   const [obs, setObs] = useState("");
-  const [remise, setRemise] = useState("");
 
   const doAdd = () => {
     if (!date || !motif.trim()) { toast.error("Date et motif requis"); return; }
-    const entry = { date, motif, observation: obs, dateRemiseEnService: remise };
+    const entry = { date, motif, observation: obs };
     if (isM) addMaintenance(p.id, entry);
     else addReparation(p.id, entry);
     toast.success(isM ? "Pliage enregistré" : "Réparation enregistrée");
-    setDate(""); setMotif(""); setObs(""); setRemise("");
+    setDate(""); setMotif(""); setObs("");
   };
 
   return (
@@ -986,10 +985,6 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
             <Label>Observation</Label>
             <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={3} data-testid={`${kind}-obs`} />
           </div>
-          <div>
-            <Label>Date de remise en service</Label>
-            <DatePickerFR value={remise} onChange={setRemise} testId={`${kind}-remise`} />
-          </div>
           <Button className="mt-2 bg-blue-600 hover:bg-blue-700" onClick={doAdd} data-testid={`${kind}-save`}>
             Enregistrer
           </Button>
@@ -1003,15 +998,8 @@ function MaintenanceSheet({ open, onClose, p, kind }) {
             {entries.length === 0 && <div className="p-3 text-sm text-slate-500">Aucune opération.</div>}
             {entries.map((e) => (
               <div key={e.id} className="flex flex-col gap-1 p-3">
-                <div className="flex items-center justify-between">
-                  <div className="font-mono-tech text-sm font-semibold text-slate-900">
-                    {fmtDate(e.date)}
-                  </div>
-                  {e.dateRemiseEnService && (
-                    <div className="font-mono-tech text-xs text-emerald-700">
-                      Remise en service : {fmtDate(e.dateRemiseEnService)}
-                    </div>
-                  )}
+                <div className="font-mono-tech text-sm font-semibold text-slate-900">
+                  {fmtDate(e.date)}
                 </div>
                 <div className="text-sm font-semibold text-slate-800">{e.motif}</div>
                 {e.observation && <div className="text-xs text-slate-500">{e.observation}</div>}

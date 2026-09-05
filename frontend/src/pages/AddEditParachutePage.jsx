@@ -132,7 +132,6 @@ export default function AddEditParachutePage() {
                 value={form.type}
                 onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
                 className="h-11"
-                placeholder="Ex : BOI, TANDEM…"
               />
             </Field>
             <Field label="Référence / Désignation" className="md:col-span-2">
@@ -141,7 +140,6 @@ export default function AddEditParachutePage() {
                 value={form.reference}
                 onChange={(e) => setForm((f) => ({ ...f, reference: e.target.value }))}
                 className="h-11"
-                placeholder="Ex : BOI-001 Mirage G4"
               />
             </Field>
           </SectionCard>
@@ -153,7 +151,6 @@ export default function AddEditParachutePage() {
                 value={form.sac.type}
                 onChange={(e) => upd("sac", "type")(e.target.value)}
                 className="h-11"
-                placeholder="Ex : Mirage G4, Vector 3…"
               />
             </Field>
             <Field label="N° de série">
@@ -180,7 +177,6 @@ export default function AddEditParachutePage() {
                 value={form.voilePrincipale.type}
                 onChange={(e) => upd("voilePrincipale", "type")(e.target.value)}
                 className="h-11"
-                placeholder="Ex : Standard, Haute performance…"
               />
             </Field>
             <Field label="N° de série">
@@ -234,7 +230,6 @@ export default function AddEditParachutePage() {
                 value={form.voileSecours.type}
                 onChange={(e) => upd("voileSecours", "type")(e.target.value)}
                 className="h-11"
-                placeholder="Ex : Rond, Aile, Tandem secours…"
               />
             </Field>
             <Field label="N° de série">
@@ -275,7 +270,6 @@ export default function AddEditParachutePage() {
                 value={form.appareilSecurite.model}
                 onChange={(e) => upd("appareilSecurite", "model")(e.target.value)}
                 className="h-11"
-                placeholder="Ex : Cypres 2 Expert, Vigil Cuattro…"
               />
             </Field>
             <Field label="N° de série">
