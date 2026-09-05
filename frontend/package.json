@@ -161,12 +161,14 @@
       "target": [
         "dmg",
         "zip"
-      ]
+      ],
+      "icon": "electron/icon.icns"
     },
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "electron/icon.ico"
     },
     "nsis": {
       "oneClick": false,

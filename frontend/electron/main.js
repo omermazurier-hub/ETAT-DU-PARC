@@ -10,6 +10,7 @@ function createWindow() {
     minWidth: 1000,
     minHeight: 700,
     title: "ETAT DU PARC",
+    icon: path.join(__dirname, "icon.png"),
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   });
 
