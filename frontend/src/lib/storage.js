@@ -221,9 +221,17 @@ export function updateSettings(patch) {
   saveDb(db);
 }
 
+const collator = new Intl.Collator("fr", { numeric: true, sensitivity: "base" });
+
+export function sortParachutes(arr) {
+  return [...arr].sort(
+    (a, b) => collator.compare(a.type || "", b.type || "") || collator.compare(a.reference || "", b.reference || "")
+  );
+}
+
 export function listParachutes({ includeArchived = false } = {}) {
   const db = loadDb();
-  return db.parachutes.filter((p) => includeArchived || !p.archived);
+  return sortParachutes(db.parachutes.filter((p) => includeArchived || !p.archived));
 }
 
 export function listArchived() {
