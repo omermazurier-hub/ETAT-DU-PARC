@@ -310,7 +310,7 @@ export default function ParachuteDetailPage() {
             icon={Shield}
             onClick={() => setSheet("vs")}
             testId="card-voile-secours"
-            badge={<StatusBadge status={invalid ? "invalide" : vsStatus} testId="badge-vs" />}
+            badge={<StatusBadge status={invalid && p.status !== "EN RÉPARATION" ? "invalide" : vsStatus} testId="badge-vs" />}
           >
             <InfoLine label="Nom" value={p.voileSecours?.type} />
             <InfoLine label="N° série" value={p.voileSecours?.serialNumber} mono />
@@ -324,7 +324,7 @@ export default function ParachuteDetailPage() {
             icon={Cpu}
             onClick={() => setSheet("aad")}
             testId="card-appareil-securite"
-            badge={<StatusBadge status={invalid ? "invalide" : aadStatus} testId="badge-aad" />}
+            badge={<StatusBadge status={invalid && p.status !== "EN RÉPARATION" ? "invalide" : aadStatus} testId="badge-aad" />}
           >
             <InfoLine label="Nom / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type} />
             <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />

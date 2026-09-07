@@ -38,9 +38,10 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
   const color = typeColor(settings, p.type);
   const invalid = isParachuteInvalid(p);
   const enReparation = p.status === "EN RÉPARATION";
+  const sectionInvalid = invalid && !enReparation;
   const vsDateStatus = validityStatus(p.voileSecours?.validityDate, warningDays);
   const aadDateStatus = validityStatus(p.appareilSecurite?.expiryDate, warningDays);
-  const aadBadgeStatus = invalid ? "invalide" : aadDateStatus;
+  const aadBadgeStatus = sectionInvalid ? "invalide" : aadDateStatus;
   const overall = invalid ? "invalide" : "valide";
   const validation = packValidationDate(p);
 
@@ -92,12 +93,12 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
       </div>
 
       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4">
-        <Section title="Harnais" testId={`row-sac-${p.id}`} invalid={invalid} color={color}>
+        <Section title="Harnais" testId={`row-sac-${p.id}`} invalid={sectionInvalid} color={color}>
           <Field label="Nom" value={p.sac?.type} />
           <Field label="N° série" value={p.sac?.serialNumber} mono />
         </Section>
 
-        <Section title="Voile principale" testId={`row-vp-${p.id}`} invalid={invalid} color={color}>
+        <Section title="Voile principale" testId={`row-vp-${p.id}`} invalid={sectionInvalid} color={color}>
           <Field label="Nom" value={p.voilePrincipale?.type} />
           <Field label="N° série" value={p.voilePrincipale?.serialNumber} mono />
           <Field
@@ -110,12 +111,12 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
           />
         </Section>
 
-        <Section title="Voile de secours" testId={`row-vs-${p.id}`} invalid={invalid} color={color}>
+        <Section title="Voile de secours" testId={`row-vs-${p.id}`} invalid={sectionInvalid} color={color}>
           <Field label="Nom" value={p.voileSecours?.type} />
           <Field label="N° série" value={p.voileSecours?.serialNumber} mono />
         </Section>
 
-        <Section title="Appareil de sécurité" testId={`row-aad-${p.id}`} invalid={invalid} color={color}>
+        <Section title="Appareil de sécurité" testId={`row-aad-${p.id}`} invalid={sectionInvalid} color={color}>
           <Field
             label="Nom / modèle"
             value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type}
