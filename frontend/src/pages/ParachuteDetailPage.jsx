@@ -198,7 +198,7 @@ export default function ParachuteDetailPage() {
                 <span
                   data-testid="detail-validation-date"
                   className={`rounded-md border px-2.5 py-1 font-mono-tech text-xs font-bold ${
-                    invalid
+                    vsStatus === "perime"
                       ? "border-rose-300 bg-rose-100 text-rose-800"
                       : "border-emerald-300 bg-emerald-50 text-emerald-800"
                   }`}

@@ -73,7 +73,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
           <span
             data-testid={`parachute-validation-${p.id}`}
             className={`rounded-md border px-1.5 py-0.5 font-mono-tech text-[11px] font-bold ${
-              invalid
+              vsDateStatus === "perime"
                 ? "border-rose-300 bg-rose-100 text-rose-800"
                 : "border-emerald-300 bg-emerald-50 text-emerald-800"
             }`}
@@ -81,7 +81,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
             Validité : {fmtDate(validation)}
           </span>
         )}
-        {!invalid && vsDateStatus === "proche" && (
+        {vsDateStatus === "proche" && (
           <StatusBadge status="proche" testId={`parachute-vs-proche-${p.id}`} />
         )}
         <div className="ml-auto flex items-center gap-2">
