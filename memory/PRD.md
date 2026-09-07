@@ -78,3 +78,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : packValidationDate utilise désormais voileSecours.validityDate (ajustements manuels reflétés dans la bulle Validité).
 - 2026-06 : couleurs de type persistées immédiatement au clic (updateSettings), lookup insensible à la casse, couleur auto pour tout nouveau type ; fond orange (bg-orange-100) du cadre quand statut EN RÉPARATION (accueil + fiche).
 - 2026-06 : bulle Validité rouge uniquement si la date de validité du pliage est dépassée (indépendante du statut réparation).
+- 2026-06 : option 'Réinitialiser (données exemple)' retirée du menu.

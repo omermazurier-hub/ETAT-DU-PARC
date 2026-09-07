@@ -17,10 +17,9 @@ import {
   Wrench,
   Download,
   Upload,
-  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
-import { exportJson, importJson, resetToSeed } from "@/lib/storage";
+import { exportJson, importJson } from "@/lib/storage";
 
 // Fallback icon (lucide has no parachute icon in some versions)
 const ParachuteGlyph = ({ className }) => (
@@ -65,13 +64,6 @@ export default function AppHeader({ onPrint }) {
     } finally {
       e.target.value = "";
     }
-  };
-
-  const handleReset = () => {
-    if (!window.confirm("Réinitialiser toutes les données avec les exemples ? Cette action est irréversible.")) return;
-    resetToSeed();
-    toast.success("Données réinitialisées");
-    navigate("/");
   };
 
   return (
@@ -130,9 +122,6 @@ export default function AppHeader({ onPrint }) {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleImportClick} data-testid="menu-import">
                 <Upload className="mr-2 h-4 w-4" /> Restaurer (Import)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleReset} data-testid="menu-reset">
-                <RefreshCw className="mr-2 h-4 w-4" /> Réinitialiser (données exemple)
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate("/parametres")} data-testid="menu-settings">
