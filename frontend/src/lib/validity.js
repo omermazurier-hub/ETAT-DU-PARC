@@ -89,8 +89,9 @@ export function overallValidity(p, warningDays = 30) {
 
 // Global validation date for a parachute = lastPackDate + 1 year
 export function packValidationDate(p) {
-  const raw = p?.voileSecours?.lastPackDate;
-  const d = parseDate(raw);
+  const stored = parseDate(p?.voileSecours?.validityDate);
+  if (stored) return stored;
+  const d = parseDate(p?.voileSecours?.lastPackDate);
   if (!d) return null;
   const v = new Date(d);
   v.setFullYear(v.getFullYear() + 1);

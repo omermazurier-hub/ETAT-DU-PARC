@@ -74,3 +74,5 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : formulaire ajout : champs 'dernier pliage'/'validité' retirés de la voile de secours ; la fiche Pliage (bouton clé) enregistre le pliage et fixe automatiquement lastPackDate + validityDate (+12 mois paramétrable), incrémente packCount, sans changer le statut.
 - 2026-06 : icône application (fond blanc supprimé) : electron/icon.png/.icns/.ico + favicon/logo192/logo512, référencée dans package.json build.mac/win.icon et main.js.
 - 2026-06 : 'Validé' → 'Validité' ; ajustement manuel de la date de validité du pliage secours dans la fiche Pliage (setReserveValidity) ; recherche étendue aux noms/marques/modèles de tous les éléments ; calendrier avec menus déroulants mois/année en français.
+- 2026-06 : accueil : badge État retiré de la voile de secours ; badge PÉREMPTION PROCHE affiché à côté de 'Validité' dans l'en-tête de la carte quand le pliage secours approche de l'échéance.
+- 2026-06 : packValidationDate utilise désormais voileSecours.validityDate (ajustements manuels reflétés dans la bulle Validité).

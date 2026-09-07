@@ -39,7 +39,6 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
   const invalid = isParachuteInvalid(p);
   const vsDateStatus = validityStatus(p.voileSecours?.validityDate, warningDays);
   const aadDateStatus = validityStatus(p.appareilSecurite?.expiryDate, warningDays);
-  const vsBadgeStatus = invalid ? "invalide" : vsDateStatus;
   const aadBadgeStatus = invalid ? "invalide" : aadDateStatus;
   const overall = invalid ? "invalide" : "valide";
   const validation = packValidationDate(p);
@@ -81,6 +80,9 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
             Validité : {fmtDate(validation)}
           </span>
         )}
+        {!invalid && vsDateStatus === "proche" && (
+          <StatusBadge status="proche" testId={`parachute-vs-proche-${p.id}`} />
+        )}
         <div className="ml-auto flex items-center gap-2">
           <ParachuteStatusPill status={p.status} testId={`parachute-status-${p.id}`} />
           <StatusBadge status={overall} testId={`parachute-overall-${p.id}`} />
@@ -110,7 +112,6 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
         <Section title="Voile de secours" testId={`row-vs-${p.id}`} invalid={invalid} color={color}>
           <Field label="Nom" value={p.voileSecours?.type} />
           <Field label="N° série" value={p.voileSecours?.serialNumber} mono />
-          <Field label="État" value={<StatusBadge status={vsBadgeStatus} testId={`row-vs-badge-${p.id}`} />} />
         </Section>
 
         <Section title="Appareil de sécurité" testId={`row-aad-${p.id}`} invalid={invalid} color={color}>
