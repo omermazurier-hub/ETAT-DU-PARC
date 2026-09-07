@@ -187,7 +187,7 @@ export default function ParachuteDetailPage() {
 
         {/* Header */}
         <div className={`mb-8 flex flex-wrap items-start justify-between gap-4 rounded-2xl border p-6 shadow-sm ${
-          invalid ? "border-rose-300 bg-rose-50" : "border-slate-200 bg-white"
+          p.status === "EN RÉPARATION" ? "border-orange-300 bg-orange-100" : invalid ? "border-rose-300 bg-rose-50" : "border-slate-200 bg-white"
         }`}>
           <div>
             <div className="mb-2 flex flex-wrap items-center gap-3">

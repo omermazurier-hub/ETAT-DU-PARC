@@ -1,0 +1,33 @@
+{
+  "summary": "Frontend-only testing of ETAT DU PARC (offline React + localStorage). Bug 1 (type color change TANDEM/BOI + persistence + toast) works. Bug 1bis (new category ECOLE auto-color + orange color choice + creating parachute with new type) works. Feature 2 partially works: home card gets bg-orange-100 (rgb(255,237,213)) when EN RÉPARATION as required, BUT the ParachuteDetailPage HEADER stays rose (bg-rose-50, rgb(255,241,242)) instead of orange because isParachuteInvalid() returns true whenever status != 'EN SERVICE' and the header only branches on invalid vs default (no EN RÉPARATION branch).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ParachuteDetailPage header (~line 189)",
+        "issue": "When status = 'EN RÉPARATION', the header block does NOT turn orange. It shows bg-rose-50 / border-rose-300 (rgb(255,241,242)) because isParachuteInvalid() returns true for any non 'EN SERVICE' status (validity.js line 103), and the header ternary is `invalid ? bg-rose-50 : bg-white` with no branch for EN RÉPARATION. Expected: bg-orange-100 (rgb(255,237,213)) when status is 'EN RÉPARATION', regardless of invalid state (or before the invalid check).",
+        "selector": "[data-testid=\"detail-title\"] closest .rounded-2xl",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix ParachuteDetailPage.jsx header (~line 189): add an EN RÉPARATION branch BEFORE the invalid branch, e.g. `p.status === 'EN RÉPARATION' ? 'border-orange-300 bg-orange-100' : invalid ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-white'` so that the orange background is applied when in repair, matching the home card behavior in ParachuteRow.jsx."
+  ],
+  "critical_code_review_comments": [
+    "Bug root cause: isParachuteInvalid() (validity.js L101-109) treats any status other than 'EN SERVICE' as invalid, so 'EN RÉPARATION' cascades into the rose 'invalid' visual branch on the detail page. The home row correctly handles enReparation first, but the detail header does not.",
+    "typeColor lookup (typeColors.js) is case-insensitive and trims values — good, correctly handles 'ECOLE' vs stored 'ecole'.",
+    "SettingsPage.EditableList onColorChange calls updateSettings immediately without waiting for the global 'Enregistrer les paramètres' button — persistence works after F5 as required.",
+    "nextFreeColorKey iterates TYPE_PALETTE in order and skips already-used keys — verified: after BOI→red, adding new ECOLE auto-picked blue (the next free)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "~85% (Bug1 OK, Bug1bis OK, Feature2 partial: home OK / detail header FAIL)"},
+  "seed_data_creation": "None persistent. Playwright uses fresh browser contexts so localStorage is re-seeded each run; ECO-001 test parachute created during 1bis test does not leak.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Test IDs confirmed: add-parachute-button (header), form-parachute-type, form-reference, submit-button (not form-parachute-reference/submit-add-parachute). Settings selectors: parachute-types-color-{i}-{key}, parachute-types-bubble-{i}, parachute-types-input, parachute-types-add, parachute-types-del-{i}. Status selectors: set-status-EN-SERVICE, set-status-EN-PLIAGE, set-status-EN-RÉPARATION (contains é, ensure UTF-8), set-status-INDISPONIBLE. Palette values: blue=rgb(37,99,235), green=rgb(22,163,74), red=rgb(220,38,38), orange=rgb(234,88,12), purple=rgb(124,58,237), slate=rgb(71,85,105). bg-orange-100=rgb(255,237,213), bg-rose-50=rgb(255,241,242).",
+  "rca of the issue": "Detail header uses invalid flag from isParachuteInvalid(p) which returns true whenever p.status !== 'EN SERVICE'. So EN RÉPARATION is classified as invalid and gets rose background, overriding the intended orange. Fix by adding an explicit EN RÉPARATION branch in the header className ternary of ParachuteDetailPage.jsx L189-191 BEFORE the invalid check, similar to how ParachuteRow.jsx L52 already does it (`enReparation ? 'bg-orange-100' : invalid ? 'bg-rose-50/70' : 'bg-white'`)."
+}

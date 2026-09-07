@@ -12,8 +12,23 @@ export const TYPE_PALETTE = [
 ];
 
 export function typeColor(settings, type) {
-  const key = settings?.parachuteTypeColors?.[type];
+  const map = settings?.parachuteTypeColors || {};
+  const t = (type || "").trim().toLowerCase();
+  const entry = Object.keys(map).find((k) => k.trim().toLowerCase() === t);
+  const key = entry ? map[entry] : undefined;
   return (TYPE_PALETTE.find((c) => c.key === key) || TYPE_PALETTE[0]).bg;
+}
+
+export function typeColorKey(settings, type) {
+  const map = settings?.parachuteTypeColors || {};
+  const t = (type || "").trim().toLowerCase();
+  const entry = Object.keys(map).find((k) => k.trim().toLowerCase() === t);
+  return entry ? map[entry] : "blue";
+}
+
+export function nextFreeColorKey(colors) {
+  const used = new Set(Object.values(colors || {}));
+  return (TYPE_PALETTE.find((c) => !used.has(c.key)) || TYPE_PALETTE[0]).key;
 }
 
 export const TypeBubble = ({ type, settings, testId }) => (

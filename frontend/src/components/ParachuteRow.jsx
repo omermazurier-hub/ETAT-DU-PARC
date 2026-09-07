@@ -37,6 +37,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
   const settings = getSettings();
   const color = typeColor(settings, p.type);
   const invalid = isParachuteInvalid(p);
+  const enReparation = p.status === "EN RÉPARATION";
   const vsDateStatus = validityStatus(p.voileSecours?.validityDate, warningDays);
   const aadDateStatus = validityStatus(p.appareilSecurite?.expiryDate, warningDays);
   const aadBadgeStatus = invalid ? "invalide" : aadDateStatus;
@@ -48,7 +49,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
       to={`/parachute/${p.id}`}
       data-testid={`parachute-row-${p.id}`}
       className={`group block rounded-xl border-2 p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-        invalid ? "bg-rose-50/70" : "bg-white"
+        enReparation ? "bg-orange-100" : invalid ? "bg-rose-50/70" : "bg-white"
       }`}
       style={{
         borderColor: `${color}55`,

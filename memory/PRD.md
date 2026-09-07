@@ -76,3 +76,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : 'Validé' → 'Validité' ; ajustement manuel de la date de validité du pliage secours dans la fiche Pliage (setReserveValidity) ; recherche étendue aux noms/marques/modèles de tous les éléments ; calendrier avec menus déroulants mois/année en français.
 - 2026-06 : accueil : badge État retiré de la voile de secours ; badge PÉREMPTION PROCHE affiché à côté de 'Validité' dans l'en-tête de la carte quand le pliage secours approche de l'échéance.
 - 2026-06 : packValidationDate utilise désormais voileSecours.validityDate (ajustements manuels reflétés dans la bulle Validité).
+- 2026-06 : couleurs de type persistées immédiatement au clic (updateSettings), lookup insensible à la casse, couleur auto pour tout nouveau type ; fond orange (bg-orange-100) du cadre quand statut EN RÉPARATION (accueil + fiche).
