@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import DatePickerFR from "@/components/DatePickerFR";
-import { createParachute, updateParachute, getParachute } from "@/lib/storage";
+import { createParachute, updateParachute, getParachute, getSettings } from "@/lib/storage";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
 
@@ -65,6 +66,8 @@ export default function AddEditParachutePage() {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const [form, setForm] = useState(emptyForm());
+  const settings = getSettings();
+  const typeOptions = Array.from(new Set([...(settings.parachuteTypes || []), ...(form.type ? [form.type] : [])]));
 
   useEffect(() => {
     if (isEdit) {
@@ -127,12 +130,18 @@ export default function AddEditParachutePage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <SectionCard title="Parachute" accent="bg-blue-600">
             <Field label="Type">
-              <Input
-                data-testid="form-parachute-type"
-                value={form.type}
-                onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-                className="h-11"
-              />
+              <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v }))}>
+                <SelectTrigger className="h-11" data-testid="form-parachute-type">
+                  <SelectValue placeholder="Choisir un type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {typeOptions.map((t) => (
+                    <SelectItem key={t} value={t} data-testid={`form-parachute-type-option-${t}`}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
             <Field label="Référence / Désignation" className="md:col-span-2">
               <Input

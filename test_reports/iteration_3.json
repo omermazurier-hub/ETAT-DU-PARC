@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only validation of 3 new features on the offline ETAT DU PARC React app: (F1) parachute Type dropdown fed from Settings, (F2) home sort by type then numeric reference, (F3) new Vue d'ensemble page. All three features work as specified. Cleanup performed successfully.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "F1_type_dropdown": "PASS - Added 'PA' type in Settings; dropdown (data-testid=form-parachute-type) exposes BOI, TANDEM, AUTRE, PA (all data-testid=form-parachute-type-option-<T> found). Created PA 10 and PA 2 successfully.",
+    "F2_sort_order": "PASS - Home list order: ['BOI-001 Mirage G4', 'BOI-003 Vector 3', 'PA 2', 'PA 10', 'TDM-002 Sigma'] confirms alphabetical type ordering (BOI<PA<TANDEM) AND numeric-in-reference (PA 2 before PA 10).",
+    "F3_vue_ensemble": "PASS - Route #/vue-ensemble renders overview-list with 5 overview-row-<id>. Header toggle button correctly shows 'Vue d'ensemble' on home and 'Menu principal' on the page, navigating between / and /vue-ensemble. Backgrounds observed: BOI-001 valide=rgb(255,255,255) with green val pill rgb(236,253,245); BOI-003 périmé=rgb(255,241,242) with red pill rgb(255,228,230); BOI-001 set EN RÉPARATION => bg rgb(255,237,213) (orange-100) as required; row click opens detail page. Val. réserve and Val. appareil pills present via data-testid overview-vs-* and overview-aad-*.",
+    "cleanup": "PASS - PA 10 and PA 2 deleted via delete-parachute-btn + confirm-delete-parachute; PA type removed from Settings via parachute-types-del-3; BOI-001 reset to EN SERVICE. Seed data (BOI-001, BOI-003, TDM-002) preserved."
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "OverviewPage: newly created parachutes with no dates get isParachuteInvalid=true and are shown with rose background. Not a bug per current spec (missing/expired dates should warn), but consider distinguishing 'not filled yet' vs 'expired' visually.",
+    "AddEditParachutePage: typeOptions merges settings.parachuteTypes with form.type, so a deleted type in Settings will still show while editing an existing parachute (good). No issue.",
+    "storage.sortParachutes uses only the first number in the reference; refs like 'PA-2A' or 'BOI-001 Mirage G4' rely on first regex match which is fine here."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "test_credentials": "Not applicable (no auth, fully offline localStorage).",
+  "seed_data_creation": "Used built-in seeded data (BOI-001, BOI-003, TDM-002). Test-created PA 10 and PA 2 were deleted afterwards; PA type was removed from Settings.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "F1/F2/F3 all pass. Header button toggles Vue d'ensemble <-> Menu principal correctly. Colors verified: bg-white(valid), bg-rose-50 rgb(255,241,242) invalid/perimé, bg-orange-100 rgb(255,237,213) EN RÉPARATION. Sort uses fr collator on type + first numeric in reference."
+}

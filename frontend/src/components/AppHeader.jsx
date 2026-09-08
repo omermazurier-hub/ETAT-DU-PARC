@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +17,8 @@ import {
   Wrench,
   Download,
   Upload,
+  Home,
+  LayoutList,
 } from "lucide-react";
 import { toast } from "sonner";
 import { exportJson, importJson } from "@/lib/storage";
@@ -32,6 +34,7 @@ const ParachuteGlyph = ({ className }) => (
 
 export default function AppHeader({ onPrint }) {
   const navigate = useNavigate();
+  const isOverview = useLocation().pathname === "/vue-ensemble";
   const fileRef = useRef(null);
 
   const handleExport = () => {
@@ -85,6 +88,18 @@ export default function AppHeader({ onPrint }) {
         </Link>
 
         <div className="flex items-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="h-11 px-5 text-base font-semibold"
+            data-testid="overview-toggle-button"
+          >
+            <Link to={isOverview ? "/" : "/vue-ensemble"}>
+              {isOverview ? <Home className="mr-2 h-5 w-5" /> : <LayoutList className="mr-2 h-5 w-5" />}
+              {isOverview ? "Menu principal" : "Vue d'ensemble"}
+            </Link>
+          </Button>
           <Button
             asChild
             size="lg"

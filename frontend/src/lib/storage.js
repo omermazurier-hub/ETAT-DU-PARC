@@ -222,10 +222,17 @@ export function updateSettings(patch) {
 }
 
 const collator = new Intl.Collator("fr", { numeric: true, sensitivity: "base" });
+const refNumber = (ref) => {
+  const m = /\d+/.exec(ref || "");
+  return m ? parseInt(m[0], 10) : Number.POSITIVE_INFINITY;
+};
 
 export function sortParachutes(arr) {
   return [...arr].sort(
-    (a, b) => collator.compare(a.type || "", b.type || "") || collator.compare(a.reference || "", b.reference || "")
+    (a, b) =>
+      collator.compare(a.type || "", b.type || "") ||
+      refNumber(a.reference) - refNumber(b.reference) ||
+      collator.compare(a.reference || "", b.reference || "")
   );
 }
 
