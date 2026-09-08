@@ -81,3 +81,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : option 'Réinitialiser (données exemple)' retirée du menu.
 - 2026-06 : en réparation, les 4 rectangles éléments (accueil) gardent leur couleur d'origine (pas de rouge).
 - 2026-06 : type de parachute via menu déroulant alimenté par settings.parachuteTypes ; tri par type puis premier nombre de la référence ; page Vue d'ensemble (/vue-ensemble) compacte avec bulles Val. réserve / Val. appareil, bouton bascule Vue d'ensemble ↔ Menu principal dans l'en-tête.
+- 2026-06 : vue d'ensemble compactée (bulles sur une ligne 'Val. réserve JJ/MM/AAAA', 'Val. EQS', sans libellé d'état, police réduite).

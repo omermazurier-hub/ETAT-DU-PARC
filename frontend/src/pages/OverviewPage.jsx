@@ -2,12 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
 import { listParachutes, subscribe, getSettings } from "@/lib/storage";
-import { fmtDate, validityStatus, isParachuteInvalid, packValidationDate, STATUS_META } from "@/lib/validity";
+import { fmtDate, validityStatus, isParachuteInvalid, packValidationDate } from "@/lib/validity";
 import { TypeBubble, typeColor } from "@/lib/typeColors";
 import { ChevronRight } from "lucide-react";
 
 const ValidityPill = ({ label, date, status, testId }) => {
-  const m = STATUS_META[status] || STATUS_META.unknown;
   const cls =
     status === "perime"
       ? "border-rose-300 bg-rose-100 text-rose-800"
@@ -17,10 +16,9 @@ const ValidityPill = ({ label, date, status, testId }) => {
       ? "border-emerald-300 bg-emerald-50 text-emerald-800"
       : "border-slate-300 bg-slate-100 text-slate-600";
   return (
-    <div className={`flex min-w-[170px] flex-col rounded-md border px-2.5 py-1 ${cls}`} data-testid={testId}>
+    <div className={`flex items-center gap-1.5 rounded border px-1.5 py-0.5 leading-none ${cls}`} data-testid={testId}>
       <span className="text-[9px] font-black uppercase tracking-widest opacity-80">{label}</span>
-      <span className="font-mono-tech text-sm font-bold">{date ? fmtDate(date) : "—"}</span>
-      <span className="text-[9px] font-semibold uppercase">{m.label}</span>
+      <span className="font-mono-tech text-[11px] font-bold">{date ? fmtDate(date) : "—"}</span>
     </div>
   );
 };
@@ -39,12 +37,12 @@ const OverviewRow = ({ p, settings }) => {
     <Link
       to={`/parachute/${p.id}`}
       data-testid={`overview-row-${p.id}`}
-      className={`flex flex-wrap items-center gap-3 rounded-lg border-2 px-3 py-2 ${bg}`}
-      style={{ borderColor: `${color}66`, boxShadow: `0 2px 8px -2px ${color}55` }}
+      className={`flex flex-wrap items-center gap-2 rounded-md border px-2 py-1 ${bg}`}
+      style={{ borderColor: `${color}66`, boxShadow: `0 1px 4px -1px ${color}55` }}
     >
       <TypeBubble type={p.type} settings={settings} />
-      <div className="font-heading text-sm font-bold text-slate-900">{p.reference}</div>
-      <div className="flex-1 truncate text-sm text-slate-700" data-testid={`overview-parts-${p.id}`}>
+      <div className="font-heading text-xs font-bold text-slate-900">{p.reference}</div>
+      <div className="flex-1 truncate text-xs text-slate-700" data-testid={`overview-parts-${p.id}`}>
         {parts.map((x, i) => (
           <span key={i}>
             {i > 0 && <span className="mx-1.5 text-slate-300">•</span>}
@@ -53,8 +51,8 @@ const OverviewRow = ({ p, settings }) => {
         ))}
       </div>
       <ValidityPill label="Val. réserve" date={vsDate} status={vsStatus} testId={`overview-vs-${p.id}`} />
-      <ValidityPill label="Val. appareil" date={p.appareilSecurite?.expiryDate} status={aadStatus} testId={`overview-aad-${p.id}`} />
-      <ChevronRight className="h-4 w-4 text-slate-400" />
+      <ValidityPill label="Val. EQS" date={p.appareilSecurite?.expiryDate} status={aadStatus} testId={`overview-aad-${p.id}`} />
+      <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
     </Link>
   );
 };
@@ -74,10 +72,10 @@ export default function OverviewPage() {
   return (
     <div>
       <AppHeader />
-      <main className="mx-auto max-w-7xl px-6 py-8">
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight text-slate-900">Vue d'ensemble</h1>
-        <p className="mb-6 text-sm text-slate-500">{count} matériel{count > 1 ? "s" : ""}</p>
-        <div className="space-y-2" data-testid="overview-list">
+      <main className="mx-auto max-w-7xl px-6 py-5">
+        <h1 className="font-heading text-2xl font-extrabold tracking-tight text-slate-900">Vue d'ensemble</h1>
+        <p className="mb-3 text-xs text-slate-500">{count} matériel{count > 1 ? "s" : ""}</p>
+        <div className="space-y-1" data-testid="overview-list">
           {items.length === 0 && <div className="text-sm text-slate-500">Aucun parachute.</div>}
           {items.map((p) => (
             <OverviewRow key={p.id} p={p} settings={settings} />
