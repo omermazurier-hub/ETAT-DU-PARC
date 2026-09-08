@@ -8,6 +8,38 @@ import { getSettings, updateSettings, subscribe } from "@/lib/storage";
 import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
 import { TYPE_PALETTE, TypeBubble, typeColorKey, nextFreeColorKey } from "@/lib/typeColors";
 import SheetsSettings from "@/components/SheetsSettings";
+import { PAGE_BG_PRESETS, ACCENT_PRESETS, THEME_DEFAULTS } from "@/lib/theme";
+
+const ColorPicker = ({ label, presets, value, onChange, testId }) => (
+  <div>
+    <Label className="text-xs font-bold uppercase tracking-wider text-slate-600">{label}</Label>
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      {presets.map((c) => (
+        <button
+          key={c.key}
+          type="button"
+          title={c.label}
+          onClick={() => onChange(c.key)}
+          data-testid={`${testId}-${c.key.replace("#", "")}`}
+          className={`h-7 w-7 rounded-full border-2 ${
+            value?.toLowerCase() === c.key ? "border-slate-900 scale-110" : "border-slate-200"
+          }`}
+          style={{ backgroundColor: c.key, transitionProperty: "transform", transitionDuration: "120ms" }}
+        />
+      ))}
+      <label className="ml-2 flex items-center gap-2 text-xs text-slate-600">
+        Personnalisée
+        <input
+          type="color"
+          value={value || "#000000"}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-7 w-9 cursor-pointer rounded border border-slate-300 bg-white p-0.5"
+          data-testid={`${testId}-custom`}
+        />
+      </label>
+    </div>
+  </div>
+);
 import { toast } from "sonner";
 
 const EditableList = ({ label, values, onChange, testIdPrefix, colors, onColorChange }) => {
@@ -91,6 +123,12 @@ export default function SettingsPage() {
     updateSettings(s);
     toast.success("Paramètres enregistrés");
   };
+  const theme = { ...THEME_DEFAULTS, ...(s.theme || {}) };
+  const setTheme = (patch) => {
+    const next = { ...theme, ...patch };
+    setS({ ...s, theme: next });
+    updateSettings({ theme: next });
+  };
 
   return (
     <div>
@@ -104,6 +142,35 @@ export default function SettingsPage() {
         </h1>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:col-span-2" data-testid="theme-settings">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="h-6 w-1 rounded bg-blue-600" />
+              <h3 className="font-heading text-base font-extrabold uppercase tracking-wide text-slate-900">Apparence</h3>
+            </div>
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <ColorPicker
+                label="Fond des pages"
+                presets={PAGE_BG_PRESETS}
+                value={theme.pageBg}
+                onChange={(v) => setTheme({ pageBg: v })}
+                testId="theme-bg"
+              />
+              <ColorPicker
+                label="Couleur des boutons et du logo"
+                presets={ACCENT_PRESETS}
+                value={theme.accent}
+                onChange={(v) => setTheme({ accent: v })}
+                testId="theme-accent"
+              />
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <p className="text-xs text-slate-500">Appliqué immédiatement à toutes les pages (Ajouter, Menu, Vue d'ensemble, logo…).</p>
+              <Button variant="ghost" size="sm" onClick={() => setTheme(THEME_DEFAULTS)} data-testid="theme-reset">
+                Couleurs par défaut
+              </Button>
+            </div>
+          </div>
+
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 className="font-heading mb-3 text-base font-extrabold uppercase tracking-wide text-slate-900">
               Validité pliage secours

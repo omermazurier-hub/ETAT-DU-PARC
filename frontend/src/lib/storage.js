@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
   warningDays: 30, // "péremption proche" = < 30 jours
   parachuteTypes: ["BOI", "TANDEM", "AUTRE"],
   parachuteTypeColors: { BOI: "blue", TANDEM: "green", AUTRE: "slate" },
+  theme: { pageBg: "#f8fafc", accent: "#2563eb" },
 };
 
 function uid() {

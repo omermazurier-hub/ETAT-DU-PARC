@@ -10,8 +10,10 @@ import ArchivesPage from "@/pages/ArchivesPage";
 import MaintenancePage from "@/pages/MaintenancePage";
 import SettingsPage from "@/pages/SettingsPage";
 import PrintPage from "@/pages/PrintPage";
+import { useApplyTheme } from "@/lib/theme";
 
 export default function App() {
+  useApplyTheme();
   return (
     <div className="App">
       <HashRouter>

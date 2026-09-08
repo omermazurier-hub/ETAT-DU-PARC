@@ -8,7 +8,37 @@ html,
 body,
 #root {
     height: 100%;
-    background-color: #f8fafc;
+    background-color: var(--app-bg, #f8fafc);
+}
+
+:root {
+    --app-bg: #f8fafc;
+    --app-accent: #2563eb;
+    --app-accent-hover: #1d4ed8;
+    --app-accent-soft: #eff6ff;
+}
+
+/* Thème : couleur d'accent appliquée aux boutons/logo bleus */
+.bg-blue-600 {
+    background-color: var(--app-accent) !important;
+}
+.hover\:bg-blue-700:hover {
+    background-color: var(--app-accent-hover) !important;
+}
+.bg-blue-50 {
+    background-color: var(--app-accent-soft) !important;
+}
+.text-blue-700, .text-blue-900 {
+    color: var(--app-accent) !important;
+}
+.border-blue-200, .border-blue-600 {
+    border-color: var(--app-accent) !important;
+}
+.border-blue-200 {
+    opacity: 1;
+}
+.bg-background {
+    background-color: var(--app-bg) !important;
 }
 
 body {
