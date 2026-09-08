@@ -41,8 +41,8 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
   const sectionInvalid = invalid && !enReparation;
   const vsDateStatus = validityStatus(p.voileSecours?.validityDate, warningDays);
   const aadDateStatus = validityStatus(p.appareilSecurite?.expiryDate, warningDays);
-  const aadBadgeStatus = sectionInvalid ? "invalide" : aadDateStatus;
-  const overall = invalid ? "invalide" : "valide";
+  const aadBadgeStatus = aadDateStatus;
+  const overall = enReparation ? "indisponible" : invalid ? "invalide" : "valide";
   const validation = packValidationDate(p);
 
   return (

@@ -65,6 +65,11 @@ export const STATUS_META = {
     dot: "bg-rose-500",
     badge: "bg-rose-50 text-rose-700 border-rose-300",
   },
+  indisponible: {
+    label: "INDISPONIBLE",
+    dot: "bg-orange-500",
+    badge: "bg-orange-50 text-orange-800 border-orange-300",
+  },
   unknown: {
     label: "NON DÉFINI",
     dot: "bg-slate-300",

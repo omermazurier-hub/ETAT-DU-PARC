@@ -162,7 +162,7 @@ export default function ParachuteDetailPage() {
   }
 
   const invalid = isParachuteInvalid(p);
-  const overall = invalid ? "invalide" : "valide";
+  const overall = p.status === "EN RÉPARATION" ? "indisponible" : invalid ? "invalide" : "valide";
   const vsStatus = validityStatus(p.voileSecours?.validityDate, settings.warningDays);
   const aadStatus = validityStatus(p.appareilSecurite?.expiryDate, settings.warningDays);
   const validation = packValidationDate(p);
@@ -213,7 +213,16 @@ export default function ParachuteDetailPage() {
             >
               {p.reference}
             </h1>
-            <p className="mt-1 text-sm text-slate-500">Créé le {fmtDate(p.createdAt)}</p>
+            <div className="mt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/parachute/${id}/modifier`)}
+                data-testid="edit-parachute-btn"
+              >
+                <Pencil className="mr-2 h-4 w-4" /> Modifier
+              </Button>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" className="h-11" onClick={() => setSheet("maintenance")} data-testid="maintenance-btn">
@@ -324,7 +333,7 @@ export default function ParachuteDetailPage() {
             icon={Cpu}
             onClick={() => setSheet("aad")}
             testId="card-appareil-securite"
-            badge={<StatusBadge status={invalid && p.status !== "EN RÉPARATION" ? "invalide" : aadStatus} testId="badge-aad" />}
+            badge={<StatusBadge status={aadStatus} testId="badge-aad" />}
           >
             <InfoLine label="Nom / Modèle" value={`${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type} />
             <InfoLine label="N° série" value={p.appareilSecurite?.serialNumber} mono />

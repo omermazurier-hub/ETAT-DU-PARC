@@ -50,7 +50,7 @@ const OverviewRow = ({ p, settings }) => {
           </span>
         ))}
       </div>
-      <ValidityPill label="Val. réserve" date={vsDate} status={vsStatus} testId={`overview-vs-${p.id}`} />
+      <ValidityPill label="Val." date={vsDate} status={vsStatus} testId={`overview-vs-${p.id}`} />
       <ValidityPill label="Val. EQS" date={p.appareilSecurite?.expiryDate} status={aadStatus} testId={`overview-aad-${p.id}`} />
       <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
     </Link>
