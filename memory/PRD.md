@@ -84,3 +84,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : vue d'ensemble compactée (bulles sur une ligne 'Val. réserve JJ/MM/AAAA', 'Val. EQS', sans libellé d'état, police réduite).
 - 2026-06 : thème (settings.theme {pageBg, accent}) : lib/theme.js applique des variables CSS (--app-bg, --app-accent…), index.css remappe bg-blue-600/hover/blue-50/text-blue-700 ; section Apparence dans Paramètres (10 presets + couleur personnalisée, appliqué immédiatement).
 - 2026-06 : badge global INDISPONIBLE (orange) en réparation ; badge appareil de sécu reflète uniquement sa date ; bouton Modifier (type/référence) remplace 'Créé le' sur la fiche ; vue d'ensemble 'Val.' au lieu de 'Val. réserve'.
+- 2026-06 : modification clavier du total de sauts → cône actuel ajusté du même delta automatiquement.

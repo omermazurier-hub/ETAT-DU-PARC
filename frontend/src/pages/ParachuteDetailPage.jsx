@@ -604,9 +604,15 @@ function VoilePrincipaleSheet({ open, onClose, p }) {
                   type="number"
                   min={0}
                   value={editTotal}
-                  onChange={(e) => setEditTotal(Number(e.target.value))}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    const delta = next - (vp.totalJumps || 0);
+                    setEditTotal(next);
+                    setEditCone(Math.max(0, (vp.jumpsSinceCone || 0) + delta));
+                  }}
                   data-testid="edit-total-input"
                 />
+                <p className="mt-1 text-[11px] text-slate-500">Le cône actuel est ajusté automatiquement de la même différence.</p>
               </div>
               <div>
                 <Label>Cône actuel</Label>
