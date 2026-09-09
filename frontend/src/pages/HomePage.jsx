@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { listParachutes, subscribe, getSettings } from "@/lib/storage";
-import { validityStatus, overallValidity } from "@/lib/validity";
+import { validityStatus, overallValidity, countAvailable } from "@/lib/validity";
 import { Search, Filter } from "lucide-react";
 
 const STATUS_FILTERS = [
@@ -88,8 +88,14 @@ export default function HomePage() {
             <h1 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900">
               Parc parachutes
             </h1>
-            <p className="mt-1 text-sm font-medium text-slate-500">
-              {filtered.length} matériel{filtered.length > 1 ? "s" : ""} affiché{filtered.length > 1 ? "s" : ""}
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+              <span>{filtered.length} matériel{filtered.length > 1 ? "s" : ""} affiché{filtered.length > 1 ? "s" : ""}</span>
+              <span
+                className="rounded-md border border-emerald-300 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-800"
+                data-testid="home-available-count"
+              >
+                {countAvailable(filtered)} disponible{countAvailable(filtered) > 1 ? "s" : ""}
+              </span>
             </p>
           </div>
         </div>

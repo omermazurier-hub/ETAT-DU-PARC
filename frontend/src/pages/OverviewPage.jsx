@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AppHeader from "@/components/AppHeader";
 import { listParachutes, subscribe, getSettings } from "@/lib/storage";
-import { fmtDate, validityStatus, isParachuteInvalid, packValidationDate } from "@/lib/validity";
+import { fmtDate, validityStatus, isParachuteInvalid, packValidationDate, countAvailable } from "@/lib/validity";
 import { TypeBubble, typeColor } from "@/lib/typeColors";
 import { ChevronRight } from "lucide-react";
 
@@ -74,7 +74,12 @@ export default function OverviewPage() {
       <AppHeader />
       <main className="mx-auto max-w-7xl px-6 py-5">
         <h1 className="font-heading text-2xl font-extrabold tracking-tight text-slate-900">Vue d'ensemble</h1>
-        <p className="mb-3 text-xs text-slate-500">{count} matériel{count > 1 ? "s" : ""}</p>
+        <p className="mb-3 flex items-center gap-2 text-xs text-slate-500">
+          <span>{count} matériel{count > 1 ? "s" : ""}</span>
+          <span className="rounded-md border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-bold text-emerald-800" data-testid="overview-available-count">
+            {countAvailable(items)} disponible{countAvailable(items) > 1 ? "s" : ""}
+          </span>
+        </p>
         <div className="space-y-1" data-testid="overview-list">
           {items.length === 0 && <div className="text-sm text-slate-500">Aucun parachute.</div>}
           {items.map((p) => (

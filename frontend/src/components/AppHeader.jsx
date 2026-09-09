@@ -130,6 +130,9 @@ export default function AppHeader({ onPrint }) {
               <DropdownMenuItem onClick={() => navigate("/maintenance")} data-testid="menu-maintenance">
                 <Wrench className="mr-2 h-4 w-4" /> Pliage
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/dto")} data-testid="menu-dto">
+                <LayoutList className="mr-2 h-4 w-4" /> DTO
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel>Données</DropdownMenuLabel>
               <DropdownMenuItem onClick={handleExport} data-testid="menu-export">

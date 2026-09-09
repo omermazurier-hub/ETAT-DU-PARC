@@ -103,6 +103,14 @@ export function packValidationDate(p) {
   return v;
 }
 
+export function isParachuteAvailable(p) {
+  return !isParachuteInvalid(p);
+}
+
+export function countAvailable(list) {
+  return (list || []).filter(isParachuteAvailable).length;
+}
+
 export function isParachuteInvalid(p) {
   if (!p) return false;
   if (p.status !== "EN SERVICE") return true;

@@ -85,3 +85,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : thème (settings.theme {pageBg, accent}) : lib/theme.js applique des variables CSS (--app-bg, --app-accent…), index.css remappe bg-blue-600/hover/blue-50/text-blue-700 ; section Apparence dans Paramètres (10 presets + couleur personnalisée, appliqué immédiatement).
 - 2026-06 : badge global INDISPONIBLE (orange) en réparation ; badge appareil de sécu reflète uniquement sa date ; bouton Modifier (type/référence) remplace 'Créé le' sur la fiche ; vue d'ensemble 'Val.' au lieu de 'Val. réserve'.
 - 2026-06 : modification clavier du total de sauts → cône actuel ajusté du même delta automatiquement.
+- 2026-06 : page DTO (/dto, menu Navigation) = nombre de voiles disponibles par nom/taille de voile principale ; badge 'N disponibles' sur l'accueil (suit les filtres) et la vue d'ensemble. Disponible = EN SERVICE et validité pliage OK.

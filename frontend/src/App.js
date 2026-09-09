@@ -2,6 +2,7 @@ import React from "react";
 import "@/App.css";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import OverviewPage from "@/pages/OverviewPage";
+import DtoPage from "@/pages/DtoPage";
 import { Toaster } from "sonner";
 import HomePage from "@/pages/HomePage";
 import AddEditParachutePage from "@/pages/AddEditParachutePage";
@@ -21,6 +22,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/vue-ensemble" element={<OverviewPage />} />
+          <Route path="/dto" element={<DtoPage />} />
           <Route path="/nouveau" element={<AddEditParachutePage />} />
           <Route path="/parachute/:id/modifier" element={<AddEditParachutePage />} />
           <Route path="/parachute/:id" element={<ParachuteDetailPage />} />
