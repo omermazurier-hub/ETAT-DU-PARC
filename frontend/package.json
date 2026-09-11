@@ -1,6 +1,6 @@
 {
   "name": "etat-du-parc",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "5.0.1",
@@ -64,9 +64,9 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "electron:dev": "concurrently -k \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "yarn build && electron-builder --mac",
-    "electron:build:win": "yarn build && electron-builder --win"
+    "electron:dev": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build:win": "yarn build && electron-builder --win --x64",
+    "electron:build:mac": "yarn build && electron-builder --mac --arm64"
   },
   "browserslist": {
     "production": [
@@ -149,30 +149,53 @@
   "build": {
     "appId": "fr.etatduparc.app",
     "productName": "ETAT DU PARC",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "build/**/*",
       "electron/**/*"
     ],
     "directories": {
-      "buildResources": "electron"
+      "buildResources": "electron",
+      "output": "dist"
     },
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
       ],
-      "icon": "electron/icon.icns"
+      "icon": "electron/icon.icns",
+      "identity": null
+    },
+    "dmg": {
+      "title": "ETAT DU PARC"
     },
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "icon": "electron/icon.ico"
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ETAT DU PARC",
+      "installerLanguages": [
+        "fr_FR"
+      ],
+      "language": "1036"
     }
   }
 }
