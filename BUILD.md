@@ -51,6 +51,11 @@ Double-cliquer sur le `.exe` pour installer. Windows SmartScreen peut afficher
 ---
 
 ## Notes
+- **Point d'entrée Electron** : `frontend/electron/main.js`, déclaré deux fois dans `package.json`
+  (`"main"` et `build.extraMetadata.main`). Si votre copie locale de `package.json` est ancienne,
+  remplacez-la par celle du projet : l'erreur *« Application entry file "build/electron.js" was not found »*
+  signifie que la clé `"main"` manque.
+- Vérifier avant un build : `node -e "console.log(require('./package.json').main)"` doit afficher `electron/main.js`.
 - La version (1.0.0) se change dans `frontend/package.json` → `"version"`.
 - Icônes : `frontend/electron/icon.icns` (Mac) et `frontend/electron/icon.ico` (Windows).
 - Les données (parachutes, paramètres, feuilles PDF) sont stockées localement sur chaque poste ;

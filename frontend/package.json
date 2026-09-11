@@ -152,7 +152,8 @@
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "files": [
       "build/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "package.json"
     ],
     "directories": {
       "buildResources": "electron",
@@ -196,6 +197,10 @@
         "fr_FR"
       ],
       "language": "1036"
-    }
+    },
+    "extraMetadata": {
+      "main": "electron/main.js"
+    },
+    "asar": true
   }
 }

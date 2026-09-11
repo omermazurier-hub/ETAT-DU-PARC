@@ -88,3 +88,4 @@ Application de bureau (web app destinée à être encapsulée en .exe Windows vi
 - 2026-06 : page DTO (/dto, menu Navigation) = nombre de voiles disponibles par nom/taille de voile principale ; badge 'N disponibles' sur l'accueil (suit les filtres) et la vue d'ensemble. Disponible = EN SERVICE et validité pliage OK.
 - 2026-06 : DTO regroupe par taille de voile (dernier nombre 80–600 du nom de la voile principale), tri décroissant, modèles listés en sous-titre.
 - 2026-06 : electron-builder configuré Mac arm64 (dmg) + Windows x64 (nsis FR), scripts electron:build:mac / electron:build:win, cross-env pour electron:dev, /dist ignoré, guide /app/BUILD.md.
+- 2026-06 : fix entrée Electron : main + build.extraMetadata.main = electron/main.js, package.json inclus dans files (erreur 'build/electron.js not found').
