@@ -66,7 +66,9 @@
     "test": "craco test",
     "electron:dev": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
     "electron:build:win": "yarn build && electron-builder --win --x64",
-    "electron:build:mac": "yarn build && electron-builder --mac --arm64"
+    "electron:build:mac": "yarn build && electron-builder --mac --arm64",
+    "web:build": "yarn build",
+    "web:preview": "npx serve -s build -l 4173"
   },
   "browserslist": {
     "production": [
