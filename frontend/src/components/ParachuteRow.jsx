@@ -19,7 +19,7 @@ const Section = ({ title, children, testId, invalid, color }) => (
   <div
     data-testid={testId}
     className={`flex-1 min-w-[200px] rounded-md border px-2.5 py-2 ${
-      invalid ? "border-rose-300 bg-rose-50" : "border-slate-200 bg-slate-50/60"
+      invalid ? "border-rose-400 bg-rose-200" : "border-slate-200 bg-slate-50/60"
     }`}
   >
     <div
@@ -50,7 +50,7 @@ export default function ParachuteRow({ parachute, warningDays = 30 }) {
       to={`/parachute/${p.id}`}
       data-testid={`parachute-row-${p.id}`}
       className={`group block rounded-xl border-2 p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-        enReparation ? "bg-orange-100" : invalid ? "bg-rose-50/70" : "bg-white"
+        enReparation ? "bg-orange-100" : invalid ? "bg-rose-200" : "bg-white"
       }`}
       style={{
         borderColor: `${color}55`,

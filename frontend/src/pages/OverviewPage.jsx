@@ -32,7 +32,7 @@ const OverviewRow = ({ p, settings }) => {
   const aadStatus = validityStatus(p.appareilSecurite?.expiryDate, settings.warningDays);
   const aad = `${p.appareilSecurite?.brand || ""} ${p.appareilSecurite?.model || ""}`.trim() || p.appareilSecurite?.type;
   const parts = [p.sac?.type, p.voilePrincipale?.type, p.voileSecours?.type, aad].filter(Boolean);
-  const bg = enReparation ? "bg-orange-100" : invalid ? "bg-rose-50" : "bg-white";
+  const bg = enReparation ? "bg-orange-100" : invalid ? "bg-rose-200" : "bg-white";
   return (
     <Link
       to={`/parachute/${p.id}`}
